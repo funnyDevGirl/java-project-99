@@ -65,8 +65,7 @@ public class User implements BaseEntity, UserDetails {
 
     @Override
     public String getUsername() {
-        //return email;
-        return "";
+        return email;
     }
 
     @Override
