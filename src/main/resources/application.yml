@@ -2,12 +2,26 @@
 
 spring:
   jpa:
+    generate-ddl: true
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
   output:
     ansi:
       enabled: always
+  instancio:
+    bean:
+      validation:
+        enabled: true
+  sql:
+    init:
+      mode: always
+  profiles:
+    default: development
+
+logging:
+  level:
+    root: INFO
 
 rsa:
   private-key: classpath:certs/private.pem
