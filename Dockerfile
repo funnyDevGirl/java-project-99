@@ -6,4 +6,4 @@ COPY / .
 
 RUN ./gradlew installDist
 
-CMD ./build/install/hexlet/code/bin/hexlet.code
+CMD ./build/install/hexlet.code/bin/hexlet.code
