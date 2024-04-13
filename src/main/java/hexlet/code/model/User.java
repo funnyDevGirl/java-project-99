@@ -8,7 +8,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -27,9 +27,10 @@ import java.util.Collection;
 @Entity
 @Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
+@ToString(includeFieldNames = true, onlyExplicitlyIncluded = true)
 @Getter
 @Setter
-public class User implements BaseEntity, UserDetails {
+public class User implements UserDetails, BaseEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -48,7 +49,8 @@ public class User implements BaseEntity, UserDetails {
     @ToString.Include
     private String email;
 
-    @NotNull
+    @Size(min = 3)
+    @NotBlank
     private String passwordDigest;
 
     @CreatedDate
@@ -56,6 +58,7 @@ public class User implements BaseEntity, UserDetails {
 
     @LastModifiedDate
     private LocalDate updatedAt;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
