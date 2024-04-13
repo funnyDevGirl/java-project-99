@@ -10,6 +10,8 @@
 
 Demo: https://java-project-99-g90g.onrender.com
 
+To access the system, registration and authentication are required: login: hexlet@example.com password: qwerty
+
 To run the program, run:
 
 ```make dev```
