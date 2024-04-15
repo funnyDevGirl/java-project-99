@@ -29,24 +29,24 @@ public class TaskService {
     }
 
     public List<TaskDTO> getAll() {
-        var taskStatuses = taskRepository.findAll();
-        return taskStatuses.stream()
+        var tasks = taskRepository.findAll();
+        return tasks.stream()
                 .map(taskMapper::map)
                 .toList();
     }
 
     public TaskDTO findById(Long id) {
-        var taskStatus = taskRepository.findById(id)
+        var task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task With Id: " + id + " Not Found"));
-        return taskMapper.map(taskStatus);
+        return taskMapper.map(task);
     }
 
     public TaskDTO update(TaskUpdateDTO taskUpdateDTO, Long id) {
-        var taskStatus = taskRepository.findById(id)
+        var task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task With Id: " + id + " Not Found"));
-        taskMapper.update(taskUpdateDTO, taskStatus);
-        taskRepository.save(taskStatus);
-        return taskMapper.map(taskStatus);
+        taskMapper.update(taskUpdateDTO, task);
+        taskRepository.save(task);
+        return taskMapper.map(task);
     }
 
     public void delete(Long id) {
