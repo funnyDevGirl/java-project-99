@@ -38,8 +38,8 @@ public class Task implements BaseEntity {
     @NotBlank
     private String description;
 
-    @NotBlank
-    @ManyToOne(fetch = FetchType.LAZY)
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
     private TaskStatus taskStatus;
 
     @NotNull
