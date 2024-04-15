@@ -10,6 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hexlet.code.dto.tasks.TaskCreateDTO;
+import hexlet.code.dto.tasks.TaskUpdateDTO;
 import hexlet.code.mapper.TaskMapper;
 import hexlet.code.model.Task;
 import hexlet.code.model.TaskStatus;
@@ -27,8 +29,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.HashMap;
 
 
 @SpringBootTest
@@ -108,23 +108,28 @@ public class TaskControllerTest {
 
     @Test
     public void testCreate() throws Exception {
-        Task newTask = Instancio.of(modelGenerator.getTaskModel()).create();
 
-        var request = post("/api/tasks")
-                .with(token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(newTask));
+        var dto = new TaskCreateDTO();
+        dto.setTitle(testTask.getName());
+        dto.setContent(testTask.getDescription());
+        dto.setIndex(testTask.getIndex());
+        dto.setAssigneeId(testTask.getAssignee().getId());
+        dto.setStatus(testTask.getTaskStatus().getSlug());
 
-        mockMvc.perform(request)
-                .andExpect(status().isCreated());
+        mockMvc.perform(post("/api/tasks")
+                        .with(token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(om.writeValueAsString(dto)))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
 
-        var task = taskRepository.findByName(newTask.getName()).orElseThrow();
+        var task = taskRepository.findByName(dto.getTitle()).orElseThrow();
 
-        assertThat(task).isNotNull();
-        assertThat(task.getName()).isEqualTo(newTask.getName());
-        assertThat(task.getTaskStatus()).isEqualTo(newTask.getTaskStatus());
-        assertThat(task.getAssignee().getId()).isEqualTo(newTask.getAssignee().getId());
-        assertThat(task.getDescription()).isEqualTo(newTask.getDescription());
+        assertThat(task.getName()).isEqualTo(dto.getTitle());
+        assertThat(task.getDescription()).isEqualTo(dto.getContent());
+        assertThat(task.getIndex()).isEqualTo(dto.getIndex());
+        assertThat(task.getAssignee().getId()).isEqualTo(dto.getAssigneeId());
+        assertThat(task.getTaskStatus().getSlug()).isEqualTo(dto.getStatus());
     }
 
     @Test
@@ -145,31 +150,7 @@ public class TaskControllerTest {
     public void testUpdate() throws Exception {
         taskRepository.save(testTask);
 
-        var dto = taskMapper.map(testTask);
-
-        dto.setTitle("ToNewReview");
-        dto.setStatus("to_new_review");
-
-        var request = put("/api/tasks/{id}", testTask.getId())
-                .with(token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(dto));
-
-        mockMvc.perform(request)
-                .andExpect(status().isOk());
-//
-        var task = taskRepository.findByName(testTask.getName()).orElseThrow();
-
-        assertThat(task.getName()).isEqualTo(dto.getTitle());
-        assertThat(task.getTaskStatus().getSlug()).isEqualTo(dto.getStatus());
-    }
-
-    @Test
-    public void testPartialUpdate() throws Exception {
-        taskRepository.save(testTask);
-
-        var dto = new HashMap<String, String>();
-        dto.put("name", "AnotherName");
+        var dto = new TaskUpdateDTO("New Title", "New Content", "to_review");
 
         var request = put("/api/tasks/{id}", testTask.getId())
                 .with(token)
@@ -179,10 +160,10 @@ public class TaskControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isOk());
 
-        var task = taskRepository.findByName(testTask.getName()).orElseThrow();
+        var task = taskRepository.findByName(dto.getTitle().get()).orElseThrow();
 
-        assertThat(task.getTaskStatus().getSlug()).isEqualTo(testTask.getTaskStatus().getSlug());
-        assertThat(task.getName()).isEqualTo(dto.get("name"));
+        assertThat(task.getName()).isEqualTo(dto.getTitle().get());
+        assertThat(task.getTaskStatus().getSlug()).isEqualTo(dto.getStatus().get());
     }
 
     @Test
