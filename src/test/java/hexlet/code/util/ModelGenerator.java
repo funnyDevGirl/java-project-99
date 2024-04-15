@@ -1,5 +1,6 @@
 package hexlet.code.util;
 
+import hexlet.code.model.Task;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.model.User;
 import jakarta.annotation.PostConstruct;
@@ -22,6 +23,7 @@ public class ModelGenerator {
 
     private Model<User> userModel;
     private Model<TaskStatus> taskStatusModel;
+    private Model<Task> taskModel;
 
     @PostConstruct
     private void init() {
@@ -33,12 +35,23 @@ public class ModelGenerator {
                 .supply(Select.field(User::getLastName), () -> faker.name().lastName())
                 .supply(Select.field(User::getEmail), () -> faker.internet().emailAddress())
                 .supply(Select.field(User::getPasswordDigest), () -> faker.internet().password(3, 100))
+                .ignore(Select.field(User::getTasks))
                 .toModel();
 
         taskStatusModel = Instancio.of(TaskStatus.class)
                 .ignore(Select.field(TaskStatus::getId))
+                .ignore(Select.field(TaskStatus::getTasks))
                 .supply(Select.field(TaskStatus::getName), () -> faker.lorem().word())
                 .supply(Select.field(TaskStatus::getSlug), () -> faker.internet().slug())
+                .toModel();
+
+        taskModel = Instancio.of(Task.class)
+                .ignore(Select.field(Task::getId))
+                .ignore(Select.field(Task::getIndex))
+                .ignore(Select.field(Task::getAssignee))
+                .supply(Select.field(Task::getName), () -> faker.name().title())
+                .supply(Select.field(Task::getDescription), () -> faker.lorem().paragraph())
+                .ignore(Select.field(Task::getTaskStatus))
                 .toModel();
     }
 }
