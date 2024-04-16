@@ -11,10 +11,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.dto.tasks.TaskCreateDTO;
-import hexlet.code.dto.tasks.TaskUpdateDTO;
 import hexlet.code.mapper.TaskMapper;
 import hexlet.code.model.Task;
-import hexlet.code.model.TaskStatus;
 import hexlet.code.model.User;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
@@ -59,7 +57,6 @@ public class TaskControllerTest {
 
     private Task testTask;
     private User testUser;
-    private TaskStatus testTaskStatus;
     private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor token;
 
     @BeforeEach
@@ -68,12 +65,9 @@ public class TaskControllerTest {
         userRepository.save(testUser);
         token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
 
-        testTaskStatus = Instancio.of(modelGenerator.getTaskStatusModel()).create();
-        taskStatusRepository.save(testTaskStatus);
-
         testTask = Instancio.of(modelGenerator.getTaskModel()).create();
         testTask.setAssignee(testUser);
-        testTask.setTaskStatus(testTaskStatus);
+        testTask.setTaskStatus(taskStatusRepository.findBySlug("draft").orElseThrow());
     }
 
     @Test
@@ -151,7 +145,10 @@ public class TaskControllerTest {
     public void testUpdate() throws Exception {
         taskRepository.save(testTask);
 
-        var dto = new TaskUpdateDTO("New Title", "New Content", "to_review");
+        var dto = taskMapper.map(testTask);
+        dto.setStatus("to_review");
+        dto.setContent("New Content");
+        dto.setTitle("New Title");
 
         var request = put("/api/tasks/{id}", testTask.getId())
                 .with(token)
@@ -161,11 +158,11 @@ public class TaskControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isOk());
 
-        var task = taskRepository.findByName(dto.getTitle().get()).orElseThrow();
+        var task = taskRepository.findByName(dto.getTitle()).orElseThrow();
 
-        assertThat(task.getName()).isEqualTo(dto.getTitle().get());
-        assertThat(task.getTaskStatus().getSlug()).isEqualTo(dto.getStatus().get());
-        assertThat(task.getDescription()).isEqualTo(dto.getContent().get());
+        assertThat(task.getName()).isEqualTo(dto.getTitle());
+        assertThat(task.getTaskStatus().getSlug()).isEqualTo(dto.getStatus());
+        assertThat(task.getDescription()).isEqualTo(dto.getContent());
     }
 
     @Test
@@ -184,7 +181,6 @@ public class TaskControllerTest {
     @AfterEach
     public void clean() {
         taskRepository.deleteAll();
-        taskStatusRepository.deleteAll();
         userRepository.deleteAll();
         //labelRepository.deleteAll();
     }
