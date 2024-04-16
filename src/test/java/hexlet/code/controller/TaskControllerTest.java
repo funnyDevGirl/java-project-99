@@ -21,6 +21,7 @@ import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.util.ModelGenerator;
 import org.instancio.Instancio;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,6 +165,7 @@ public class TaskControllerTest {
 
         assertThat(task.getName()).isEqualTo(dto.getTitle().get());
         assertThat(task.getTaskStatus().getSlug()).isEqualTo(dto.getStatus().get());
+        assertThat(task.getDescription()).isEqualTo(dto.getContent().get());
     }
 
     @Test
@@ -176,5 +178,14 @@ public class TaskControllerTest {
                 .andExpect(status().isNoContent());
 
         assertThat(taskRepository.existsById(testTask.getId())).isEqualTo(false);
+    }
+
+
+    @AfterEach
+    public void clean() {
+        taskRepository.deleteAll();
+        taskStatusRepository.deleteAll();
+        userRepository.deleteAll();
+        //labelRepository.deleteAll();
     }
 }
