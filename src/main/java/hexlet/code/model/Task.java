@@ -6,8 +6,6 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.CascadeType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -39,11 +37,13 @@ public class Task implements BaseEntity {
     private String description;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
+    //@ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     private TaskStatus taskStatus;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToOne
+    //@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private User assignee;
 
     @CreatedDate

@@ -7,7 +7,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Column;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -65,22 +64,20 @@ public class User implements UserDetails, BaseEntity {
     @Column(name = "updated_at")
     private LocalDate updatedAt;
 
-    @OneToMany(mappedBy = "assignee", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "assignee", fetch = FetchType.EAGER)
     private List<Task> tasks = new ArrayList<>();
 
 
 
-    public void addTask(Task task) {
-        tasks.add(task);
-        task.setAssignee(this);
-    }
-
-    public void removeTask(Task task) {
-        tasks.remove(task);
-        task.setAssignee(null);
-    }
-
-
+//    public void addTask(Task task) {
+//        tasks.add(task);
+//        task.setAssignee(this);
+//    }
+//
+//    public void removeTask(Task task) {
+//        tasks.remove(task);
+//        task.setAssignee(null);
+//    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
