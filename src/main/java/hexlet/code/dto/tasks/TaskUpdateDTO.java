@@ -25,10 +25,4 @@ public class TaskUpdateDTO {
 
     @NotBlank
     private JsonNullable<String> status;
-
-    public TaskUpdateDTO(String title, String content, String status) {
-        this.title = JsonNullable.of(title);
-        this.content = JsonNullable.of(content);
-        this.status = JsonNullable.of(status);
-    }
 }
