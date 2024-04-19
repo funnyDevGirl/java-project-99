@@ -22,4 +22,7 @@ public class TaskDTO {
     private String content;
 
     private String status;
+
+//    @JsonProperty("taskLabelIds")
+//    private Set<Long> labelIds;
 }
