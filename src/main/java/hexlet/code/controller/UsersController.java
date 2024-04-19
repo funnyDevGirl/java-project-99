@@ -59,7 +59,6 @@ public class UsersController {
 
     @PutMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    //@PreAuthorize("@userRepository.findById(#id).get().getEmail() == authentication.name")
     @PreAuthorize("@userUtils.isUser(#id)")
     public UserDTO update(@Valid @RequestBody UserUpdateDTO userUpdateDTO, @PathVariable Long id) {
         return userService.update(userUpdateDTO, id);
@@ -67,9 +66,8 @@ public class UsersController {
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    //@PreAuthorize("@userRepository.findById(#id).get().getEmail() == authentication.name")
     @PreAuthorize("@userUtils.isUser(#id)")
-    public void delete(@PathVariable Long id) {
+    public void delete(@PathVariable Long id) throws Exception {
         userService.delete(id);
     }
 }
