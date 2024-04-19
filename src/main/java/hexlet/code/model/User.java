@@ -1,5 +1,6 @@
 package hexlet.code.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.EntityListeners;
@@ -7,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -54,6 +56,7 @@ public class User implements UserDetails, BaseEntity {
 
     @Size(min = 3)
     @NotBlank
+    @JsonIgnore
     private String passwordDigest;
 
     @CreatedDate
@@ -64,20 +67,8 @@ public class User implements UserDetails, BaseEntity {
     @Column(name = "updated_at")
     private LocalDate updatedAt;
 
-    @OneToMany(mappedBy = "assignee", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "assignee", fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     private List<Task> tasks = new ArrayList<>();
-
-
-
-//    public void addTask(Task task) {
-//        tasks.add(task);
-//        task.setAssignee(this);
-//    }
-//
-//    public void removeTask(Task task) {
-//        tasks.remove(task);
-//        task.setAssignee(null);
-//    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
