@@ -2,13 +2,12 @@ package hexlet.code.service;
 
 import hexlet.code.dto.tasks.TaskCreateDTO;
 import hexlet.code.dto.tasks.TaskDTO;
+import hexlet.code.dto.tasks.TaskFilterDTO;
 import hexlet.code.dto.tasks.TaskUpdateDTO;
 import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.mapper.TaskMapper;
-import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
-import hexlet.code.repository.TaskStatusRepository;
-import hexlet.code.repository.UserRepository;
+import hexlet.code.specification.TaskSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,16 +22,12 @@ public class TaskService {
     private TaskRepository taskRepository;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private TaskStatusRepository taskStatusRepository;
-
-    @Autowired
-    private LabelRepository labelRepository;
-
-    @Autowired
     private TaskMapper taskMapper;
+
+    @Autowired
+    private TaskSpecification taskSpecification;
+
+
 
     public TaskDTO create(TaskCreateDTO taskCreateDTO) {
         var task = taskMapper.map(taskCreateDTO);
@@ -42,7 +37,13 @@ public class TaskService {
     }
 
     public List<TaskDTO> getAll() {
-        var tasks = taskRepository.findAll();
+        return taskRepository.findAll().stream()
+                .map(taskMapper::map).toList();
+    }
+
+    public List<TaskDTO> getAll(TaskFilterDTO taskFilterDTO) {
+        var filter = taskSpecification.build(taskFilterDTO);
+        var tasks = taskRepository.findAll(filter);
         return tasks.stream()
                 .map(taskMapper::map)
                 .toList();
