@@ -3,7 +3,7 @@ package hexlet.code.controller;
 import hexlet.code.dto.labels.LabelDTO;
 import hexlet.code.dto.labels.LabelCreateDTO;
 import hexlet.code.dto.labels.LabelUpdateDTO;
-import hexlet.code.service.LabelService;
+import hexlet.code.service.TESTLabelService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ import java.util.List;
 public class LabelController {
 
     @Autowired
-    private LabelService labelService;
+    private TESTLabelService labelService;
 
     @GetMapping(path = "")
     @ResponseStatus(HttpStatus.OK)
