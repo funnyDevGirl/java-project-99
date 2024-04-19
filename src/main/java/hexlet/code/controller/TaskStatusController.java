@@ -60,7 +60,7 @@ public class TaskStatusController {
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    public void delete(@PathVariable Long id) throws Exception {
         taskStatusService.delete(id);
     }
 }
