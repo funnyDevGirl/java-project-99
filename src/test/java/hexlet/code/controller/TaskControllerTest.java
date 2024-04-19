@@ -180,6 +180,8 @@ public class TaskControllerTest {
         assertThat(task.getName()).isEqualTo(dto.getTitle());
         assertThat(task.getTaskStatus().getSlug()).isEqualTo(dto.getStatus());
         assertThat(task.getDescription()).isEqualTo(dto.getContent());
+        assertThat(task.getAssignee().getUsername()).isEqualTo(testTask.getAssignee().getUsername());
+        assertThat(task.getLabels().size()).isEqualTo(testTask.getLabels().size());
     }
 
     @Test
