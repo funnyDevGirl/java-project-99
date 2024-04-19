@@ -1,5 +1,6 @@
 package hexlet.code.util;
 
+import hexlet.code.model.Label;
 import hexlet.code.model.Task;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.model.User;
@@ -22,8 +23,9 @@ public class ModelGenerator {
     private Faker faker;
 
     private Model<User> userModel;
-    private Model<TaskStatus> taskStatusModel;
     private Model<Task> taskModel;
+    private Model<TaskStatus> taskStatusModel;
+    private Model<Label> labelModel;
 
     @PostConstruct
     private void init() {
@@ -38,6 +40,15 @@ public class ModelGenerator {
                 .ignore(Select.field(User::getTasks))
                 .toModel();
 
+        taskModel = Instancio.of(Task.class)
+                .ignore(Select.field(Task::getId))
+                .ignore(Select.field(Task::getIndex))
+                .ignore(Select.field(Task::getAssignee))
+                .supply(Select.field(Task::getName), () -> faker.name().title())
+                .supply(Select.field(Task::getDescription), () -> faker.text().text())
+                .ignore(Select.field(Task::getTaskStatus))
+                .toModel();
+
         taskStatusModel = Instancio.of(TaskStatus.class)
                 .ignore(Select.field(TaskStatus::getId))
                 .ignore(Select.field(TaskStatus::getTasks))
@@ -45,13 +56,10 @@ public class ModelGenerator {
                 .supply(Select.field(TaskStatus::getSlug), () -> faker.internet().slug())
                 .toModel();
 
-        taskModel = Instancio.of(Task.class)
-                .ignore(Select.field(Task::getId))
-                .ignore(Select.field(Task::getIndex))
-                .ignore(Select.field(Task::getAssignee))
-                .supply(Select.field(Task::getName), () -> faker.name().title())
-                .supply(Select.field(Task::getDescription), () -> faker.lorem().paragraph())
-                .ignore(Select.field(Task::getTaskStatus))
+        labelModel = Instancio.of(Label.class)
+                .ignore(Select.field(Label::getId))
+                .supply(Select.field(Label::getName), () -> faker.lorem().characters(3, 100))
+                .ignore(Select.field(Label::getTasks))
                 .toModel();
     }
 }
