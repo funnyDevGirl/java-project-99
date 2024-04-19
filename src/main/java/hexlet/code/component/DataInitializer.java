@@ -2,7 +2,7 @@ package hexlet.code.component;
 
 import hexlet.code.dto.labels.LabelCreateDTO;
 import hexlet.code.dto.taskstatuses.TaskStatusCreateDTO;
-import hexlet.code.service.LabelService;
+import hexlet.code.service.TESTLabelService;
 import hexlet.code.service.TaskStatusService;
 import hexlet.code.service.UserService;
 import lombok.AllArgsConstructor;
@@ -28,7 +28,7 @@ public class DataInitializer implements ApplicationRunner {
     private TaskStatusService taskStatusService;
 
     @Autowired
-    private LabelService labelService;
+    private TESTLabelService labelService;
 
 
     @Override
