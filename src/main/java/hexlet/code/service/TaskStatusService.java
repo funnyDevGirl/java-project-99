@@ -50,7 +50,7 @@ public class TaskStatusService {
         return taskStatusMapper.map(taskStatus);
     }
 
-    public void delete(Long id) {
+    public void delete(Long id) throws Exception {
         taskStatusRepository.deleteById(id);
     }
 }
