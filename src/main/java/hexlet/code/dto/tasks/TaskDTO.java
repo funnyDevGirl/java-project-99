@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 public class TaskDTO {
@@ -23,6 +26,5 @@ public class TaskDTO {
 
     private String status;
 
-//    @JsonProperty("taskLabelIds")
-//    private Set<Long> labelIds;
+    private Set<Long> taskLabelIds = new HashSet<>();
 }
