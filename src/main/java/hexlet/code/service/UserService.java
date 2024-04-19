@@ -50,7 +50,7 @@ public class UserService {
         return userMapper.map(user);
     }
 
-    public void delete(Long id) {
+    public void delete(Long id) throws Exception {
         userRepository.deleteById(id);
     }
 }
