@@ -54,9 +54,4 @@ public abstract class TaskMapper {
         return taskStatusRepository.findBySlug(slug).orElseThrow(
                 () -> new ResourceNotFoundException("TaskStatus with slug " + slug + " not found"));
     }
-
-//    @Named("assigneeIdToUser")
-//    public User assigneeIdToUser(long id) {
-//        return id == null ? null : new User(id);
-//    }
 }
