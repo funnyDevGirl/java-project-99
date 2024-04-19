@@ -12,8 +12,11 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.dto.tasks.TaskCreateDTO;
 import hexlet.code.mapper.TaskMapper;
+import hexlet.code.model.Label;
 import hexlet.code.model.Task;
+import hexlet.code.model.TaskStatus;
 import hexlet.code.model.User;
+import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
@@ -28,6 +31,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.HashSet;
+import java.util.Set;
 
 
 @SpringBootTest
@@ -45,6 +51,9 @@ public class TaskControllerTest {
 
     @Autowired
     private TaskStatusRepository taskStatusRepository;
+
+    @Autowired
+    private LabelRepository labelRepository;
 
     @Autowired
     private ObjectMapper om;
@@ -65,9 +74,17 @@ public class TaskControllerTest {
         userRepository.save(testUser);
         token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
 
+        Label testLabel = Instancio.of(modelGenerator.getLabelModel()).create();
+        labelRepository.save(testLabel);
+
+        TaskStatus testStatus = taskStatusRepository.findBySlug("draft").orElseThrow();
+
         testTask = Instancio.of(modelGenerator.getTaskModel()).create();
         testTask.setAssignee(testUser);
-        testTask.setTaskStatus(taskStatusRepository.findBySlug("draft").orElseThrow());
+        testTask.setTaskStatus(testStatus);
+        Set<Label> labels = new HashSet<>();
+        labels.add(testLabel);
+        testTask.setLabels(labels);
     }
 
     @Test
@@ -182,6 +199,5 @@ public class TaskControllerTest {
     public void clean() {
         taskRepository.deleteAll();
         userRepository.deleteAll();
-        //labelRepository.deleteAll();
     }
 }
