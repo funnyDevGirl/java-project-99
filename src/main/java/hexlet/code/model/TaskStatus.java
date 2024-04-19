@@ -13,7 +13,8 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -24,7 +25,8 @@ import java.util.List;
 @Entity
 @Table(name = "statuses")
 @EntityListeners(AuditingEntityListener.class)
-@Data
+@Getter
+@Setter
 public class TaskStatus implements BaseEntity {
 
     @Id
