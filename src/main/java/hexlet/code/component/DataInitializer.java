@@ -1,6 +1,8 @@
 package hexlet.code.component;
 
+import hexlet.code.dto.labels.LabelCreateDTO;
 import hexlet.code.dto.taskstatuses.TaskStatusCreateDTO;
+import hexlet.code.service.LabelService;
 import hexlet.code.service.TaskStatusService;
 import hexlet.code.service.UserService;
 import lombok.AllArgsConstructor;
@@ -25,6 +27,9 @@ public class DataInitializer implements ApplicationRunner {
     @Autowired
     private TaskStatusService taskStatusService;
 
+    @Autowired
+    private LabelService labelService;
+
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -44,5 +49,11 @@ public class DataInitializer implements ApplicationRunner {
                 new TaskStatusCreateDTO("Published", "published")
         );
         taskStatuses.forEach(taskStatusService::create);
+
+        List<LabelCreateDTO> labels = List.of(
+                new LabelCreateDTO("feature"),
+                new LabelCreateDTO("bug")
+        );
+        labels.forEach(labelService::create);
     }
 }
