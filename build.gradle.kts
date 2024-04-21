@@ -2,30 +2,35 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
-	id 'jacoco'
-	id 'checkstyle'
 	id("com.github.ben-manes.versions") version "0.48.0"
+	id("application")
+	id("checkstyle")
+	id("jacoco")
+	id("org.springframework.boot") version "3.2.2"
+	id("io.spring.dependency-management") version "1.1.4"
 	id("io.sentry.jvm.gradle") version "4.3.1"
-	id 'application'
-	id 'org.springframework.boot' version '3.2.2'
-	id 'io.spring.dependency-management' version '1.1.4'
 	id("io.freefair.lombok") version "8.4"
 }
 
-group = 'hexlet.code'
-version = '0.0.1-SNAPSHOT'
+group = "hexlet.code"
+version = "0.0.1-SNAPSHOT"
 
 application {
 	mainClass.set("hexlet.code.AppApplication")
 }
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_20
+	sourceCompatibility = JavaVersion.VERSION_17
+}
+
+checkstyle {
+	configFile = file("config/checkstyle/checkstyle.xml")
+	toolVersion = "10.13.0"    // your choice here
 }
 
 configurations {
 	compileOnly {
-		extendsFrom annotationProcessor
+		extendsFrom(configurations.annotationProcessor.get())
 	}
 }
 
@@ -68,9 +73,14 @@ dependencies {
 
 }
 
-tasks.test {
+tasks.withType<Test> {
 	finalizedBy(tasks.jacocoTestReport)
 	useJUnitPlatform()
+	testLogging {
+		exceptionFormat = TestExceptionFormat.FULL
+		events = mutableSetOf(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
+		showStandardStreams = true
+	}
 }
 
 tasks.jacocoTestReport {
