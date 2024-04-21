@@ -8,7 +8,7 @@ plugins {
 	id("jacoco")
 	id("org.springframework.boot") version "3.2.2"
 	id("io.spring.dependency-management") version "1.1.4"
-	id("io.sentry.jvm.gradle") version "4.3.1"
+	id("io.sentry.jvm.gradle") version "4.4.1"
 	id("io.freefair.lombok") version "8.4"
 }
 
@@ -36,6 +36,18 @@ configurations {
 
 repositories {
 	mavenCentral()
+}
+
+sentry {
+	includeSourceContext = true
+
+	org = "hexlet-g0"
+	projectName = "java-spring-boot"
+	authToken = System.getenv("SENTRY_AUTH_TOKEN")
+}
+
+tasks.sentryBundleSourcesJava {
+	enabled = System.getenv("SENTRY_AUTH_TOKEN") != null
 }
 
 dependencies {
