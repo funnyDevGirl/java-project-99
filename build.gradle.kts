@@ -36,6 +36,8 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url = uri("https://repo.spring.io/milestone") }
+	maven { url = uri("https://repo.spring.io/snapshot") }
 }
 
 sentry {
@@ -85,7 +87,7 @@ dependencies {
 
 }
 
-tasks.withType<Test> {
+tasks.withType<Test>() {
 	finalizedBy(tasks.jacocoTestReport)
 	useJUnitPlatform()
 	testLogging {
