@@ -21,15 +21,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.HashMap;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
 public class UsersControllerTest {
 
     @Autowired
@@ -49,10 +46,12 @@ public class UsersControllerTest {
 
     private User testUser;
 
+
     @BeforeEach
     public void setUp() {
         testUser = Instancio.of(modelGenerator.getUserModel()).create();
     }
+
 
     @Test
     public void testWelcomePage() throws Exception {
