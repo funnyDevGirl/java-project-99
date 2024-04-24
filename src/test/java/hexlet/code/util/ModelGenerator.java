@@ -13,23 +13,26 @@ import org.instancio.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Locale;
 
 @Getter
 @Component
 public class ModelGenerator {
 
-    @Autowired
-    private Faker faker;
+    private final Faker faker;
 
     private Model<User> userModel;
     private Model<Task> taskModel;
     private Model<TaskStatus> taskStatusModel;
     private Model<Label> labelModel;
 
+    @Autowired
+    public ModelGenerator(Faker faker) {
+        this.faker = faker;
+    }
+
+
     @PostConstruct
     private void init() {
-        faker = new Faker(Locale.US);
 
         userModel = Instancio.of(User.class)
                 .ignore(Select.field(User::getId))
