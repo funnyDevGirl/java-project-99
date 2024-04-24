@@ -14,10 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.HashMap;
-
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
@@ -27,9 +24,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
 public class TaskStatusControllerTest {
 
     @Autowired
@@ -51,11 +48,13 @@ public class TaskStatusControllerTest {
 
     private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor token;
 
+
     @BeforeEach
     public void setUp() {
         testTaskStatus = Instancio.of(modelGenerator.getTaskStatusModel()).create();
         token = jwt().jwt(builder -> builder.subject("hexlet@example.com"));
     }
+
 
     @Test
     public void testShow() throws Exception {
