@@ -31,15 +31,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.HashSet;
 import java.util.Set;
 
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
 public class TaskControllerTest {
 
     @Autowired
@@ -67,8 +64,11 @@ public class TaskControllerTest {
     private ModelGenerator modelGenerator;
 
     private Task testTask;
+
     private User testUser;
+
     private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor token;
+
 
     @BeforeEach
     public void setUp() {
@@ -88,6 +88,13 @@ public class TaskControllerTest {
         labels.add(testLabel);
         testTask.setLabels(labels);
     }
+
+    @AfterEach
+    public void clean() {
+        taskRepository.deleteAll();
+        userRepository.deleteAll();
+    }
+
 
     @Test
     public void testShow() throws Exception {
@@ -196,12 +203,5 @@ public class TaskControllerTest {
                 .andExpect(status().isNoContent());
 
         assertThat(taskRepository.existsById(testTask.getId())).isEqualTo(false);
-    }
-
-
-    @AfterEach
-    public void clean() {
-        taskRepository.deleteAll();
-        userRepository.deleteAll();
     }
 }
