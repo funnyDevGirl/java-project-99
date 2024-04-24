@@ -20,7 +20,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,9 +30,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
 public class LabelControllerTest {
 
     @Autowired
@@ -61,9 +60,11 @@ public class LabelControllerTest {
     private ModelGenerator modelGenerator;
 
     private Label testLabel;
-//    private Task testTask;
+
     private User testUser;
+
     private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor token;
+
 
     @BeforeEach
     public void setUp() {
@@ -71,14 +72,16 @@ public class LabelControllerTest {
         userRepository.save(testUser);
         token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
 
-//        testTask = Instancio.of(modelGenerator.getTaskModel()).create();
-//        testTask.setAssignee(testUser);
-//        testTask.setTaskStatus(taskStatusRepository.findBySlug("draft").orElseThrow());
-//        taskRepository.save(testTask);
-
         testLabel = Instancio.of(modelGenerator.getLabelModel()).create();
         labelRepository.save(testLabel);
     }
+
+    @AfterEach
+    public void clean() {
+        userRepository.delete(testUser);
+        labelRepository.delete(testLabel);
+    }
+
 
     @Test
     public void testShow() throws Exception {
@@ -167,11 +170,5 @@ public class LabelControllerTest {
                 .andExpect(status().isNoContent());
 
         assertThat(labelRepository.existsById(testLabel.getId())).isEqualTo(false);
-    }
-
-    @AfterEach
-    public void clean() {
-        userRepository.delete(testUser);
-        labelRepository.delete(testLabel);
     }
 }
