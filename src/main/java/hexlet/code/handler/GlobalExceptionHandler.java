@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.exception.ParentEntityExistsException;
-import hexlet.code.exception.Exception;
 
 
 @ControllerAdvice
