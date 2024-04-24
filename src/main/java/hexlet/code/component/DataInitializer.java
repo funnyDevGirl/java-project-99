@@ -9,10 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import hexlet.code.dto.users.UserCreateDTO;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,14 +18,9 @@ import java.util.List;
 @AllArgsConstructor
 public class DataInitializer implements ApplicationRunner {
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private TaskStatusService taskStatusService;
-
-    @Autowired
-    private LabelService labelService;
+    private final UserService userService;
+    private final TaskStatusService taskStatusService;
+    private final LabelService labelService;
 
 
     @Override
