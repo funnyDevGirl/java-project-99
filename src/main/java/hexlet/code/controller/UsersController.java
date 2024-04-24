@@ -7,8 +7,7 @@ import hexlet.code.service.UserService;
 import hexlet.code.utils.UserUtils;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,19 +20,17 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
-
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/users")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class UsersController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final UserUtils userUtils;
 
-    @Autowired
-    private UserUtils userUtils;
 
     @GetMapping(path = "")
     @ResponseStatus(HttpStatus.OK)
