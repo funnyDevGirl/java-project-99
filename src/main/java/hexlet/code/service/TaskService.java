@@ -124,7 +124,10 @@ public class TaskService {
                 new ResourceNotFoundException("Task with id " + id + " not found"));
 
         //удаляю таску из списка автора:
-        task.getAssignee().removeTask(task);
+        var assignee = task.getAssignee();
+        if (assignee != null) {
+            assignee.removeTask(task);
+        }
 
         //удаляю таску из статусов:
         task.getTaskStatus().removeTask(task);
