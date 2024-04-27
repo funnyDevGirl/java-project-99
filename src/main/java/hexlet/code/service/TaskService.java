@@ -94,8 +94,8 @@ public class TaskService {
                     .ifPresent(assignee -> assignee.addTask(task));
 
             //записываю таску статусу и статус таске:
-            var status = taskStatusRepository.findBySlug(task.getTaskStatus().getSlug()).orElseThrow();
-            status.addTask(task);
+            taskStatusRepository.findBySlug(task.getTaskStatus().getSlug())
+                    .ifPresent(status -> status.addTask(task));
 
             //записываю таску в метки:
             Set<Long> labelIds = task.getLabels().stream()
