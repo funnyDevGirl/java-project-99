@@ -6,9 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Column;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Id;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.CascadeType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
@@ -16,12 +16,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-
 import static jakarta.persistence.GenerationType.IDENTITY;
+
 
 @Entity
 @Table(name = "labels")
@@ -43,6 +42,21 @@ public class Label implements BaseEntity {
     @CreatedDate
     private LocalDate createdAt;
 
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "labels", cascade = CascadeType.MERGE)
+//    @ManyToMany
+//    @JoinTable(name="label_task",
+//            joinColumns = @JoinColumn(name="label_id", referencedColumnName="id"),
+//            inverseJoinColumns = @JoinColumn(name="task_id", referencedColumnName="id") )
+    @ManyToMany(mappedBy = "labels", fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     private Set<Task> tasks = new HashSet<>();
+
+
+    public void addTask(Task task) {
+        tasks.add(task);
+        task.getLabels().add(this);
+    }
+
+    public void removeTask(Task task) {
+        tasks.remove(task);
+        task.getLabels().remove(this);
+    }
 }
