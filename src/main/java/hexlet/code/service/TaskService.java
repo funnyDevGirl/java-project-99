@@ -41,7 +41,9 @@ public class TaskService {
 
             //записываю таску автору и автора таске:
             var assignee = task.getAssignee();
-            assignee.addTask(task);
+            if (assignee != null) {
+                assignee.addTask(task);
+            }
 
             //записываю таску статусу и статус таске:
             var status = task.getTaskStatus();
