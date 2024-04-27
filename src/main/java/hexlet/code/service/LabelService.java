@@ -3,6 +3,7 @@ package hexlet.code.service;
 import hexlet.code.dto.labels.LabelCreateDTO;
 import hexlet.code.dto.labels.LabelDTO;
 import hexlet.code.dto.labels.LabelUpdateDTO;
+import hexlet.code.exception.ParentEntityExistsException;
 import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.mapper.LabelMapper;
 import hexlet.code.repository.LabelRepository;
@@ -21,6 +22,10 @@ public class LabelService {
 
     public LabelDTO create(LabelCreateDTO labelCreateDTO) {
         var label = labelMapper.map(labelCreateDTO);
+
+//        //записываю метку в таски:
+//        var tasks = label.getTasks();
+//        tasks.forEach(task -> task.addLabel(label));
 
         labelRepository.save(label);
         return labelMapper.map(label);
@@ -49,6 +54,13 @@ public class LabelService {
     }
 
     public void delete(Long id) {
-        labelRepository.deleteById(id);
+        var label = labelRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Label With Id: " + id + " Not Found"));
+        if (label.getTasks().isEmpty()) {
+            labelRepository.deleteById(id);
+        } else {
+            throw new ParentEntityExistsException("Label with id " + id
+                    + " is associated with the Task entity and cannot be deleted.");
+        }
     }
 }
