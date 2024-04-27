@@ -27,10 +27,4 @@ public class TaskUpdateDTO {
     private JsonNullable<String> status;
 
     private JsonNullable<Set<Long>> taskLabelIds;
-
-//    public TaskUpdateDTO(String title, String content, String status) {
-//        this.title = JsonNullable.of(title);
-//        this.content = JsonNullable.of(content);
-//        this.status = JsonNullable.of(status);
-//    }
 }
