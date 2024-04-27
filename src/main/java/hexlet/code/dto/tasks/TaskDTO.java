@@ -1,11 +1,12 @@
 package hexlet.code.dto.tasks;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.util.HashSet;
 import java.util.Set;
+
 
 @Getter
 @Setter
@@ -15,6 +16,7 @@ public class TaskDTO {
 
     private Integer index;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private String createdAt;
 
     @JsonProperty("assignee_id")
