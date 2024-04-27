@@ -93,6 +93,7 @@ public class TaskControllerTest {
     public void clean() {
         taskRepository.deleteAll();
         userRepository.deleteAll();
+        labelRepository.deleteAll();
     }
 
 
@@ -152,6 +153,7 @@ public class TaskControllerTest {
         assertThat(task.getAssignee().getId()).isEqualTo(dto.getAssigneeId());
         assertThat(task.getTaskStatus().getSlug()).isEqualTo(dto.getStatus());
     }
+
 
     @Test
     public void testCreateWithNotValidTitle() throws Exception {
