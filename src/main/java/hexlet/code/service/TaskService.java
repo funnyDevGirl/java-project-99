@@ -90,8 +90,13 @@ public class TaskService {
             taskMapper.update(taskUpdateDTO, task);
 
             //записываю таску автору и автора таске:
-            userRepository.findByEmail(task.getAssignee().getEmail())
-                    .ifPresent(assignee -> assignee.addTask(task));
+//            userRepository.findByEmail(task.getAssignee().getEmail())
+//                    .ifPresent(assignee -> assignee.addTask(task));
+            var assignee = task.getAssignee();
+            if (assignee != null) {
+                userRepository.findByEmail(assignee.getEmail())
+                    .ifPresent(user -> user.addTask(task));
+            }
 
             //записываю таску статусу и статус таске:
             taskStatusRepository.findBySlug(task.getTaskStatus().getSlug())
