@@ -58,13 +58,6 @@ public class UserService {
 
     public void delete(Long id) throws Exception {
 
-        try {
-            userRepository.deleteById(id);
-
-        } catch (ParentEntityExistsException ex) {
-
-            System.out.println("User with id " + id
-                    + " is associated with the Task entity and cannot be deleted.");
-        }
+        userRepository.deleteById(id);
     }
 }
