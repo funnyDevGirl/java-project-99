@@ -3,7 +3,6 @@ package hexlet.code.service;
 import hexlet.code.dto.taskstatuses.TaskStatusCreateDTO;
 import hexlet.code.dto.taskstatuses.TaskStatusDTO;
 import hexlet.code.dto.taskstatuses.TaskStatusUpdateDTO;
-import hexlet.code.exception.ParentEntityExistsException;
 import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.mapper.TaskStatusMapper;
 import hexlet.code.repository.TaskStatusRepository;
