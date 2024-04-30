@@ -58,13 +58,6 @@ public class TaskStatusService {
 
     public void delete(Long id) throws Exception {
 
-        try {
-            taskStatusRepository.deleteById(id);
-
-        } catch (ParentEntityExistsException ex) {
-
-            System.out.println("TaskStatus with id " + id
-                    + " is associated with the Task entity and cannot be deleted.");
-        }
+        taskStatusRepository.deleteById(id);
     }
 }
