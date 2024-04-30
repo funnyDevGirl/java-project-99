@@ -21,6 +21,7 @@ public class LabelService {
 
 
     public LabelDTO create(LabelCreateDTO labelCreateDTO) {
+
         var label = labelMapper.map(labelCreateDTO);
 
 //        //записываю метку в таски:
@@ -28,37 +29,44 @@ public class LabelService {
 //        tasks.forEach(task -> task.addLabel(label));
 
         labelRepository.save(label);
+
         return labelMapper.map(label);
     }
 
     public List<LabelDTO> getAll() {
+
         var tasks = labelRepository.findAll();
+
         return tasks.stream()
                 .map(labelMapper::map)
                 .toList();
     }
 
     public LabelDTO findById(Long id) {
+
         var label = labelRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Label With Id: " + id + " Not Found"));
+
         return labelMapper.map(label);
     }
 
     public LabelDTO update(LabelUpdateDTO labelUpdateDTO, Long id) {
+
         var label = labelRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Label With Id: " + id + " Not Found"));
-        labelMapper.update(labelUpdateDTO, label);
 
+        labelMapper.update(labelUpdateDTO, label);
         labelRepository.save(label);
+
         return labelMapper.map(label);
     }
 
-    public void delete(Long id) {
-        var label = labelRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Label With Id: " + id + " Not Found"));
-        if (label.getTasks().isEmpty()) {
+    public void delete(Long id) throws Exception {
+
+        try {
             labelRepository.deleteById(id);
-        } else {
+
+        } catch (ParentEntityExistsException ex) {
             throw new ParentEntityExistsException("Label with id " + id
                     + " is associated with the Task entity and cannot be deleted.");
         }
