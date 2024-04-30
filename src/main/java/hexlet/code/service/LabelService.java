@@ -63,13 +63,6 @@ public class LabelService {
 
     public void delete(Long id) throws Exception {
 
-        try {
-            labelRepository.deleteById(id);
-
-        } catch (ParentEntityExistsException ex) {
-
-            System.out.println("Label with id " + id
-                    + " is associated with the Task entity and cannot be deleted.");
-        }
+        labelRepository.deleteById(id);
     }
 }
