@@ -21,38 +21,47 @@ public class TaskStatusService {
 
 
     public TaskStatusDTO create(TaskStatusCreateDTO taskStatusCreateDTO) {
+
         var taskStatus = taskStatusMapper.map(taskStatusCreateDTO);
         taskStatusRepository.save(taskStatus);
+
         return taskStatusMapper.map(taskStatus);
     }
 
     public List<TaskStatusDTO> getAll() {
+
         var taskStatuses = taskStatusRepository.findAll();
+
         return taskStatuses.stream()
                 .map(taskStatusMapper::map)
                 .toList();
     }
 
     public TaskStatusDTO findById(Long id) {
+
         var taskStatus = taskStatusRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("TaskStatus With Id: " + id + " Not Found"));
+
         return taskStatusMapper.map(taskStatus);
     }
 
     public TaskStatusDTO update(TaskStatusUpdateDTO taskStatusUpdateDTO, Long id) {
+
         var taskStatus = taskStatusRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("TaskStatus With Id: " + id + " Not Found"));
+
         taskStatusMapper.update(taskStatusUpdateDTO, taskStatus);
         taskStatusRepository.save(taskStatus);
+
         return taskStatusMapper.map(taskStatus);
     }
 
     public void delete(Long id) throws Exception {
-        var taskStatus = taskStatusRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("TaskStatus with id " + id + " not found"));
-        if (taskStatus.getTasks().isEmpty()) {
+
+        try {
             taskStatusRepository.deleteById(id);
-        } else {
+
+        } catch (ParentEntityExistsException ex) {
             throw new ParentEntityExistsException("TaskStatus with id " + id
                     + " is associated with the Task entity and cannot be deleted.");
         }
