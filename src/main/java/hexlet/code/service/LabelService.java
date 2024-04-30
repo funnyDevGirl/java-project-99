@@ -3,7 +3,6 @@ package hexlet.code.service;
 import hexlet.code.dto.labels.LabelCreateDTO;
 import hexlet.code.dto.labels.LabelDTO;
 import hexlet.code.dto.labels.LabelUpdateDTO;
-import hexlet.code.exception.ParentEntityExistsException;
 import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.mapper.LabelMapper;
 import hexlet.code.repository.LabelRepository;
