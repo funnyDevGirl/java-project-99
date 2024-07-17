@@ -65,6 +65,10 @@ public abstract class TaskMapper {
     public TaskStatus slugToTaskStatus(String slug) {
         return taskStatusRepository.findBySlug(slug).orElseThrow(
                 () -> new ResourceNotFoundException("TaskStatus with slug " + slug + " not found"));
+
+//        //падают тесты, если так:
+//        return taskStatusRepository.findBySlugWithTasks(slug).orElseThrow(
+//                () -> new ResourceNotFoundException("TaskStatus with slug " + slug + " not found"));
     }
 
     @Named("labelIdsToLabels")

@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+//@CacheConfig(cacheNames = {"tasks"})
 public class TaskService {
 
     private final TaskRepository taskRepository;
@@ -33,7 +34,8 @@ public class TaskService {
     private final TaskStatusRepository taskStatusRepository;
     private final LabelRepository labelRepository;
 
-
+    //@CacheEvict(allEntries = true)
+    //@CacheEvict(cacheNames = "tasks", key = "#task.id")
     public TaskDTO create(TaskCreateDTO taskCreateDTO) {
 
         try {
@@ -75,12 +77,21 @@ public class TaskService {
                 .toList();
     }
 
+    //@Cacheable(cacheNames = "tasks", key = "#id")
+    //@Cacheable(cacheNames = "tasks", key = "#id != null ? #id : '-1'")
     public TaskDTO findById(Long id) {
+//        if (id == null) {
+//            throw new IllegalArgumentException("Id cannot be null");
+//        }
+
         var task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task With Id: " + id + " Not Found"));
         return taskMapper.map(task);
     }
 
+    //@Cacheable("tasks")
+    //@CacheEvict(allEntries = true)
+    //@CacheEvict(cacheNames = "tasks", key = "#task.id")
     public TaskDTO update(TaskUpdateDTO taskUpdateDTO, Long id) {
 
         try {
@@ -101,6 +112,8 @@ public class TaskService {
             //записываю таску статусу и статус таске:
             taskStatusRepository.findBySlug(task.getTaskStatus().getSlug())
                     .ifPresent(status -> status.addTask(task));
+//            taskStatusRepository.findBySlugWithTasks(task.getTaskStatus().getSlug())
+//                    .ifPresent(status -> status.addTask(task)); //падают тесты
 
             //записываю таску в метки:
             Set<Long> labelIds = task.getLabels().stream()

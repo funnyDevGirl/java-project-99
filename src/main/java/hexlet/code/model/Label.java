@@ -14,6 +14,7 @@ import jakarta.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDate;
@@ -28,6 +29,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"name"})
+//@CacheConfig(cacheNames = "labels")
 public class Label implements BaseEntity {
 
     @Id
@@ -42,11 +44,7 @@ public class Label implements BaseEntity {
     @CreatedDate
     private LocalDate createdAt;
 
-//    @ManyToMany
-//    @JoinTable(name="label_task",
-//            joinColumns = @JoinColumn(name="label_id", referencedColumnName="id"),
-//            inverseJoinColumns = @JoinColumn(name="task_id", referencedColumnName="id") )
-    @ManyToMany(mappedBy = "labels", fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany(mappedBy = "labels", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private Set<Task> tasks = new HashSet<>();
 
 

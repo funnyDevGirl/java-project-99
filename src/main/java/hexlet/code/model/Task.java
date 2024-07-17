@@ -9,14 +9,15 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,6 +30,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"name", "taskStatus"})
+//@CacheConfig(cacheNames = "tasks")
 public class Task implements BaseEntity {
 
     @Id
@@ -47,30 +49,44 @@ public class Task implements BaseEntity {
     @CreatedDate
     private LocalDate createdAt;
 
-    @JoinColumn(name = "status_id", nullable = false)
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private TaskStatus taskStatus;
 
-    @JoinColumn(name = "assignee_id")
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)//у меня
+    @ManyToOne(fetch = FetchType.LAZY)
     private User assignee;
 
-
-//    @ManyToMany
-//    @JoinTable(name="label_task",
-//            joinColumns = @JoinColumn(name="task_id", referencedColumnName="id"),
-//            inverseJoinColumns = @JoinColumn(name="label_id", referencedColumnName="id") )
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private Set<Label> labels = new HashSet<>();
 
 
-//    public void addLabel(Label label) {
-//        labels.add(label);
-//        label.getTasks().add(this);
+    public void addLabel(Label label) {
+        labels.add(label);
+        label.getTasks().add(this);
+    }
+
+    public void removeLabel(Label label) {
+        labels.remove(label);
+        label.getTasks().remove(this);
+    }
+
+    public void addUser(User user) {
+        this.setAssignee(user);
+        user.getTasks().add(this);
+    }
+
+    public void removeUser(User user) {
+        this.setAssignee(null);
+        user.getTasks().remove(this);
+    }
+
+    // TODO: TaskStatus
+//    public void addUser(User user) {
+//        this.setAssignee(user);
+//        user.getTasks().add(this);
 //    }
 //
-//    public void removeLabel(Label label) {
-//        labels.remove(label);
-//        label.getTasks().remove(this);
+//    public void removeStatus(User user) {
+//        this.setAssignee(null);
+//        user.getTasks().remove(this);
 //    }
 }

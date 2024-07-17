@@ -5,7 +5,7 @@ spring:
     generate-ddl: true
     show-sql: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
   output:
     ansi:
       enabled: always
@@ -17,7 +17,15 @@ spring:
     init:
       mode: always
   profiles:
-    default: development
+    #default: development
+    default: file
+
+  cache:
+    type: ehcache
+    jcache:
+      #ehcache:
+      config: classpath:ehcache.xml
+
 
 logging:
   level:

@@ -37,6 +37,7 @@ import java.util.Set;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+//@ContextConfiguration(classes = {CacheConfig.class})
 public class TaskControllerTest {
 
     @Autowired
@@ -145,7 +146,8 @@ public class TaskControllerTest {
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
-        var task = taskRepository.findByName(dto.getTitle()).orElseThrow();
+        //var task = taskRepository.findByName(dto.getTitle()).orElseThrow();
+        var task = taskRepository.findByNameWithLazyFields(dto.getTitle()).orElseThrow();
 
         assertThat(task.getName()).isEqualTo(dto.getTitle());
         assertThat(task.getDescription()).isEqualTo(dto.getContent());
@@ -186,7 +188,8 @@ public class TaskControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isOk());
 
-        var task = taskRepository.findByName(dto.getTitle()).orElseThrow();
+        //var task = taskRepository.findByName(dto.getTitle()).orElseThrow();
+        var task = taskRepository.findByNameWithLazyFields(dto.getTitle()).orElseThrow();
 
         assertThat(task.getName()).isEqualTo(dto.getTitle());
         assertThat(task.getTaskStatus().getSlug()).isEqualTo(dto.getStatus());

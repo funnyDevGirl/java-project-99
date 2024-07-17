@@ -21,6 +21,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.HashSet;
+
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
@@ -78,8 +80,8 @@ public class LabelControllerTest {
 
     @AfterEach
     public void clean() {
-        userRepository.delete(testUser);
-        labelRepository.delete(testLabel);
+        //userRepository.delete(testUser);
+        //labelRepository.delete(testLabel);
     }
 
 
@@ -121,7 +123,8 @@ public class LabelControllerTest {
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
-        var label = labelRepository.findByName(dto.getName()).orElseThrow();
+        //var label = labelRepository.findByName(dto.getName()).orElseThrow();
+        var label = labelRepository.findByNameWithTasks(dto.getName()).orElseThrow();
 
         assertThat(label.getName()).isEqualTo(dto.getName());
         assertThat(label.getName()).isNotNull();
@@ -155,9 +158,15 @@ public class LabelControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isOk());
 
-        var label = labelRepository.findByName(dto.getName()).orElseThrow();
+        //var label = labelRepository.findByName(dto.getName()).orElseThrow();
+        var label = labelRepository.findByNameWithTasks(dto.getName()).orElseThrow();
 
         assertThat(label.getName()).isEqualTo("Java");
+
+// Не подгружается, падает с LazyInitializationException:
+// Работает, если:
+// 1) поставить @Transactional в тестовый метод
+// 2) для лениво подгружаемого поля поставить @Fetch(FetchMode.JOIN)
         assertThat(label.getTasks().size()).isEqualTo(testLabel.getTasks().size());
     }
 

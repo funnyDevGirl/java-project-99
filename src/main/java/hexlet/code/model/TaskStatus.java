@@ -2,7 +2,6 @@ package hexlet.code.model;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -17,8 +16,8 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -45,8 +44,10 @@ public class TaskStatus implements BaseEntity {
     @CreatedDate
     private LocalDate createdAt;
 
-    @OneToMany(mappedBy = "taskStatus", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    private List<Task> tasks = new ArrayList<>();
+    //@OneToMany(mappedBy = "taskStatus", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "taskStatus", cascade = CascadeType.MERGE)
+    //private List<Task> tasks = new ArrayList<>();
+    private Set<Task> tasks = new HashSet<>();
 
 
     public void addTask(Task task) {

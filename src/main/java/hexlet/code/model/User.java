@@ -25,7 +25,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -66,8 +67,10 @@ public class User implements UserDetails, BaseEntity {
     @Column(name = "updated_at")
     private LocalDate updatedAt;
 
-    @OneToMany(mappedBy = "assignee", fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-    private List<Task> tasks = new ArrayList<>();
+    //@OneToMany(mappedBy = "assignee", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "assignee", cascade = CascadeType.MERGE)
+    //private List<Task> tasks = new ArrayList<>();
+    private Set<Task> tasks = new HashSet<>();
 
 
     public void addTask(Task task) {
