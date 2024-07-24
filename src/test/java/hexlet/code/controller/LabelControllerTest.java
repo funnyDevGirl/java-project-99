@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.dto.labels.LabelCreateDTO;
 import hexlet.code.mapper.LabelMapper;
 import hexlet.code.model.Label;
+import hexlet.code.model.Task;
 import hexlet.code.model.User;
 import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
@@ -20,6 +21,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -160,11 +164,6 @@ public class LabelControllerTest {
         var label = labelRepository.findByNameWithTasks(dto.getName()).orElseThrow();
 
         assertThat(label.getName()).isEqualTo("Java");
-
-// Не подгружается, падает с LazyInitializationException:
-// Работает, если:
-// 1) поставить @Transactional в тестовый метод
-// 2) для лениво подгружаемого поля поставить @Fetch(FetchMode.JOIN)
         assertThat(label.getTasks().size()).isEqualTo(testLabel.getTasks().size());
     }
 
@@ -177,5 +176,73 @@ public class LabelControllerTest {
                 .andExpect(status().isNoContent());
 
         assertThat(labelRepository.existsById(testLabel.getId())).isEqualTo(false);
+    }
+
+    @Test
+    public void bidirectionalNoSync() {
+        //PERSIST
+        Task task = new Task();
+        task.setName("Metro");
+        task.setDescription("Build metro station");
+        taskRepository.save(task);
+
+        Label label = new Label();
+        label.setName("label");
+
+        Set<Task> tasks = new HashSet<>();
+        tasks.add(task);
+        label.setTasks(tasks);
+
+        labelRepository.save(label);
+
+        //MERGE
+        label.setName("Metropolitan");
+        task.setDescription("Destroy metro station");
+
+        labelRepository.save(label);
+
+        Label saved = labelRepository.findByNameWithTasks("Metropolitan").orElseThrow();
+        assertThat(saved.getTasks()).isEmpty();
+    }
+    /*
+        Label:
+         Name: Metropolitan
+         tasks: "Metro"
+
+        Task:
+         name: Metro
+         descr: Destroy metro station
+         label: null
+         */
+
+    // TODO:  исправить тест
+    @Test
+    public void bidirectional() {
+        //PERSIST
+        Task task = new Task();
+        task.setName("Metro");
+        task.setDescription("Build metro station");
+        taskRepository.save(task);
+
+        Label label = new Label();
+        label.setName("label");
+        Set<Task> tasks = new HashSet<>();
+        tasks.add(task);
+        label.setTasks(tasks);
+
+        Set<Label> labels = new HashSet<>();
+        labels.add(label);
+        task.setLabels(labels);
+
+        labelRepository.save(label);
+
+        //MERGE
+        label.setName("Metropolitan");
+        task.setDescription("Destroy metro station");
+
+        labelRepository.save(label);
+
+        Label saved = labelRepository.findByNameWithTasks("Metropolitan").orElseThrow();
+        assertThat(saved.getTasks()).isNotEmpty();
     }
 }

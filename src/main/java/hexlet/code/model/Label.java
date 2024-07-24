@@ -28,7 +28,6 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"name"})
-//@CacheConfig(cacheNames = "labels")
 public class Label implements BaseEntity {
 
     @Id
@@ -43,7 +42,7 @@ public class Label implements BaseEntity {
     @CreatedDate
     private LocalDate createdAt;
 
-    @ManyToMany(mappedBy = "labels", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToMany(mappedBy = "labels", cascade = CascadeType.MERGE)
     private Set<Task> tasks = new HashSet<>();
 
 

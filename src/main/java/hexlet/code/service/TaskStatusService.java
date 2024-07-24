@@ -35,7 +35,6 @@ public class TaskStatusService {
     }
 
     public TaskStatusDTO findById(Long id) {
-        // вместо findById():
         var taskStatus = taskStatusRepository.findByIdWithTasks(id)
                 .orElseThrow(() -> new ResourceNotFoundException("TaskStatus With Id: " + id + " Not Found"));
 
@@ -43,7 +42,6 @@ public class TaskStatusService {
     }
 
     public TaskStatusDTO update(TaskStatusUpdateDTO taskStatusUpdateDTO, Long id) {
-        // вместо findById():
         var taskStatus = taskStatusRepository.findByIdWithTasks(id)
                 .orElseThrow(() -> new ResourceNotFoundException("TaskStatus With Id: " + id + " Not Found"));
 

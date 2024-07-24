@@ -12,15 +12,12 @@ import java.util.Set;
 @Repository
 public interface LabelRepository extends JpaRepository<Label, Long> {
 
-    //@Cacheable(cacheNames = "labels", key = "#name")
     @Query("SELECT l FROM Label l LEFT JOIN FETCH l.tasks WHERE l.name = :name")
     Optional<Label> findByNameWithTasks(@Param("name") String name);
 
-    //@Cacheable(cacheNames = "labels", key = "#labelsIds")
     @Query("SELECT l FROM Label l WHERE l.id IN :labelsIds")
     Set<Label> findByIdIn(@Param("labelsIds") Set<Long> labelsIds);
 
-    //@Cacheable(cacheNames = "labels", key = "#id")
     @Query("SELECT l FROM Label l LEFT JOIN FETCH l.tasks WHERE l.id = :id")
     Optional<Label> findByIdWithTasks(@Param("id") Long id);
 

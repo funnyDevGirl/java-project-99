@@ -68,9 +68,7 @@ public class User implements UserDetails, BaseEntity {
     @Column(name = "updated_at")
     private LocalDate updatedAt;
 
-    //@OneToMany(mappedBy = "assignee", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @OneToMany(mappedBy = "assignee", cascade = CascadeType.MERGE)
-    //private List<Task> tasks = new ArrayList<>();
     private Set<Task> tasks = new HashSet<>();
 
 

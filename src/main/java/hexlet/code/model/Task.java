@@ -54,7 +54,7 @@ public class Task implements BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private User assignee;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToMany
     private Set<Label> labels = new HashSet<>();
 
 

@@ -35,7 +35,6 @@ public class UserService {
     }
 
     public UserDTO findById(Long id) {
-        // вместо findById():
         var user = userRepository.findByIdWithTasks(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User With Id: " + id + " Not Found"));
 
@@ -43,7 +42,6 @@ public class UserService {
     }
 
     public UserDTO update(UserUpdateDTO userUpdateDTO, Long id) {
-        // вместо findById():
         var user = userRepository.findByIdWithTasks(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User With Id: " + id + " Not Found"));
 
