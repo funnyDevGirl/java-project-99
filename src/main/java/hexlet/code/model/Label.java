@@ -14,7 +14,6 @@ import jakarta.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDate;
@@ -49,12 +48,14 @@ public class Label implements BaseEntity {
 
 
     public void addTask(Task task) {
-        tasks.add(task);
+        //tasks.add(task);
+        this.getTasks().add(task);
         task.getLabels().add(this);
     }
 
     public void removeTask(Task task) {
-        tasks.remove(task);
+        //tasks.remove(task);
+        this.getTasks().remove(task);
         task.getLabels().remove(this);
     }
 }

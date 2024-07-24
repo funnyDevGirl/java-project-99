@@ -11,6 +11,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -25,6 +26,7 @@ import java.util.Set;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
+@EqualsAndHashCode(of = {"name", "slug"})
 public class TaskStatus implements BaseEntity {
 
     @Id
@@ -46,17 +48,18 @@ public class TaskStatus implements BaseEntity {
 
     //@OneToMany(mappedBy = "taskStatus", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @OneToMany(mappedBy = "taskStatus", cascade = CascadeType.MERGE)
-    //private List<Task> tasks = new ArrayList<>();
     private Set<Task> tasks = new HashSet<>();
 
 
     public void addTask(Task task) {
-        tasks.add(task);
+        //tasks.add(task);
+        this.getTasks().add(task);
         task.setTaskStatus(this);
     }
 
     public void removeTask(Task task) {
-        tasks.remove(task);
+        //tasks.remove(task);
+        this.getTasks().remove(task);
         task.setTaskStatus(null);
     }
 }

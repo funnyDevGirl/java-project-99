@@ -2,7 +2,6 @@ package hexlet.code.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -13,6 +12,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -35,6 +35,7 @@ import java.util.Set;
 @ToString(includeFieldNames = true, onlyExplicitlyIncluded = true)
 @Getter
 @Setter
+@EqualsAndHashCode(of = "email")
 public class User implements UserDetails, BaseEntity {
 
     @Id
@@ -74,12 +75,14 @@ public class User implements UserDetails, BaseEntity {
 
 
     public void addTask(Task task) {
-        tasks.add(task);
+        this.getTasks().add(task);
+        //tasks.add(task);
         task.setAssignee(this);
     }
 
     public void removeTask(Task task) {
-        tasks.remove(task);
+        this.getTasks().remove(task);
+        //tasks.remove(task);
         task.setAssignee(null);
     }
 

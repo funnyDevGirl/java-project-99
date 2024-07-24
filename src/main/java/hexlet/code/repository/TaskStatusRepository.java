@@ -14,9 +14,9 @@ public interface TaskStatusRepository extends JpaRepository<TaskStatus, Long>, J
 
     Optional<TaskStatus> findBySlug(String slug);
 
-    @Query("SELECT ts FROM TaskStatus ts JOIN FETCH ts.tasks WHERE ts.id = :id")
+    @Query("SELECT ts FROM TaskStatus ts LEFT JOIN FETCH ts.tasks WHERE ts.id = :id")
     Optional<TaskStatus> findByIdWithTasks(@Param("id") Long id);
 
-    @Query("SELECT ts FROM TaskStatus ts JOIN FETCH ts.tasks WHERE ts.slug = :slug")
+    @Query("SELECT ts FROM TaskStatus ts LEFT JOIN FETCH ts.tasks WHERE ts.slug = :slug")
     Optional<TaskStatus> findBySlugWithTasks(@Param("slug") String slug);
 }

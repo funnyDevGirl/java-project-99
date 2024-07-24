@@ -6,7 +6,6 @@ import hexlet.code.dto.tasks.TaskFilterDTO;
 import hexlet.code.dto.tasks.TaskUpdateDTO;
 import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.mapper.TaskMapper;
-import hexlet.code.model.Label;
 import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
@@ -18,8 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -38,6 +35,8 @@ public class TaskService {
     //@CacheEvict(cacheNames = "tasks", key = "#task.id")
     public TaskDTO create(TaskCreateDTO taskCreateDTO) {
 
+        // TODO: УБРАТЬ try-catch
+        // TODO: пусть исключение обрабатывается в ControllerAdvice
         try {
             var task = taskMapper.map(taskCreateDTO);
 
@@ -80,11 +79,8 @@ public class TaskService {
     //@Cacheable(cacheNames = "tasks", key = "#id")
     //@Cacheable(cacheNames = "tasks", key = "#id != null ? #id : '-1'")
     public TaskDTO findById(Long id) {
-//        if (id == null) {
-//            throw new IllegalArgumentException("Id cannot be null");
-//        }
-
-        var task = taskRepository.findById(id)
+        // вместо findById(id)
+        var task = taskRepository.findByIdWithLazyFields(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task With Id: " + id + " Not Found"));
         return taskMapper.map(task);
     }
@@ -95,33 +91,33 @@ public class TaskService {
     public TaskDTO update(TaskUpdateDTO taskUpdateDTO, Long id) {
 
         try {
-            var task = taskRepository.findById(id)
+            // вместо findById(id)
+            var task = taskRepository.findByIdWithLazyFields(id)
                     .orElseThrow(() -> new ResourceNotFoundException("Task With Id: " + id + " Not Found"));
 
             taskMapper.update(taskUpdateDTO, task);
 
-            //записываю таску автору и автора таске:
-//            userRepository.findByEmail(task.getAssignee().getEmail())
-//                    .ifPresent(assignee -> assignee.addTask(task));
-            var assignee = task.getAssignee();
-            if (assignee != null) {
-                userRepository.findByEmail(assignee.getEmail())
-                    .ifPresent(user -> user.addTask(task));
-            }
+            // TODO: выходит, ЭТО ТОЖЕ НЕ НУЖНО?
 
-            //записываю таску статусу и статус таске:
-            taskStatusRepository.findBySlug(task.getTaskStatus().getSlug())
-                    .ifPresent(status -> status.addTask(task));
+//            //записываю таску автору и автора таске:
+//            var assignee = task.getAssignee();
+//            if (assignee != null) {
+//                userRepository.findByEmail(assignee.getEmail())
+//                    .ifPresent(user -> user.addTask(task));
+//            }
+//
+//            //записываю таску статусу и статус таске:
+//            // вместо findBySlug(id)
 //            taskStatusRepository.findBySlugWithTasks(task.getTaskStatus().getSlug())
-//                    .ifPresent(status -> status.addTask(task)); //падают тесты
-
-            //записываю таску в метки:
-            Set<Long> labelIds = task.getLabels().stream()
-                    .map(Label::getId)
-                    .collect(Collectors.toSet());
-
-            Set<Label> labels = labelRepository.findByIdIn(labelIds);
-            labels.forEach(label -> label.addTask(task));
+//                    .ifPresent(status -> status.addTask(task));
+//
+//            //записываю таску в метки:
+//            Set<Long> labelIds = task.getLabels().stream()
+//                    .map(Label::getId)
+//                    .collect(Collectors.toSet());
+//
+//            Set<Label> labels = labelRepository.findByIdIn(labelIds);
+//            labels.forEach(label -> label.addTask(task));
 
             taskRepository.save(task);
             return taskMapper.map(task);
@@ -132,23 +128,6 @@ public class TaskService {
     }
 
     public void delete(Long id) {
-
-        var task = taskRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Task with id " + id + " not found"));
-
-        //удаляю таску из списка автора:
-        var assignee = task.getAssignee();
-        if (assignee != null) {
-            assignee.removeTask(task);
-        }
-
-        //удаляю таску из статусов:
-        task.getTaskStatus().removeTask(task);
-
-        //удаляю таску из меток:
-        task.getLabels().forEach(label -> label.removeTask(task));
-
-        //удаляю таску из репо:
         taskRepository.deleteById(id);
     }
 }

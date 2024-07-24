@@ -14,7 +14,6 @@ import jakarta.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -60,12 +59,14 @@ public class Task implements BaseEntity {
 
 
     public void addLabel(Label label) {
-        labels.add(label);
+        //labels.add(label);
+        this.getLabels().add(label);
         label.getTasks().add(this);
     }
 
     public void removeLabel(Label label) {
-        labels.remove(label);
+        //labels.remove(label);
+        this.getLabels().remove(label);
         label.getTasks().remove(this);
     }
 
@@ -79,14 +80,13 @@ public class Task implements BaseEntity {
         user.getTasks().remove(this);
     }
 
-    // TODO: TaskStatus
-//    public void addUser(User user) {
-//        this.setAssignee(user);
-//        user.getTasks().add(this);
-//    }
-//
-//    public void removeStatus(User user) {
-//        this.setAssignee(null);
-//        user.getTasks().remove(this);
-//    }
+    public void addStatus(TaskStatus status) {
+        this.setTaskStatus(status);
+        status.getTasks().add(this);
+    }
+
+    public void removeStatus(TaskStatus status) {
+        this.setTaskStatus(null);
+        status.getTasks().remove(this);
+    }
 }
