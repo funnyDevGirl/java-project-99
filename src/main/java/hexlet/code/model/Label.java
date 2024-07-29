@@ -8,7 +8,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Id;
-import jakarta.persistence.FetchType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
@@ -47,13 +46,11 @@ public class Label implements BaseEntity {
 
 
     public void addTask(Task task) {
-        //tasks.add(task);
         this.getTasks().add(task);
         task.getLabels().add(this);
     }
 
     public void removeTask(Task task) {
-        //tasks.remove(task);
         this.getTasks().remove(task);
         task.getLabels().remove(this);
     }

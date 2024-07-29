@@ -35,14 +35,14 @@ public class TaskStatusService {
     }
 
     public TaskStatusDTO findById(Long id) {
-        var taskStatus = taskStatusRepository.findByIdWithTasks(id)
+        var taskStatus = taskStatusRepository.findByIdWithEagerUpload(id)
                 .orElseThrow(() -> new ResourceNotFoundException("TaskStatus With Id: " + id + " Not Found"));
 
         return taskStatusMapper.map(taskStatus);
     }
 
     public TaskStatusDTO update(TaskStatusUpdateDTO taskStatusUpdateDTO, Long id) {
-        var taskStatus = taskStatusRepository.findByIdWithTasks(id)
+        var taskStatus = taskStatusRepository.findByIdWithEagerUpload(id)
                 .orElseThrow(() -> new ResourceNotFoundException("TaskStatus With Id: " + id + " Not Found"));
 
         taskStatusMapper.update(taskStatusUpdateDTO, taskStatus);

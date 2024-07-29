@@ -74,13 +74,11 @@ public class User implements UserDetails, BaseEntity {
 
     public void addTask(Task task) {
         this.getTasks().add(task);
-        //tasks.add(task);
         task.setAssignee(this);
     }
 
     public void removeTask(Task task) {
         this.getTasks().remove(task);
-        //tasks.remove(task);
         task.setAssignee(null);
     }
 

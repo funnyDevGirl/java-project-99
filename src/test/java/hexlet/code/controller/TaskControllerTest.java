@@ -31,13 +31,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
-import java.util.HashSet;
-import java.util.Set;
 
 
 @SpringBootTest
 @AutoConfigureMockMvc
-//@ContextConfiguration(classes = {CacheConfig.class})
 public class TaskControllerTest {
 
     @Autowired
@@ -66,7 +63,11 @@ public class TaskControllerTest {
 
     private Task testTask;
 
+    private TaskStatus testStatus;
+
     private User testUser;
+
+    private Label testLabel;
 
     private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor token;
 
@@ -77,17 +78,19 @@ public class TaskControllerTest {
         userRepository.save(testUser);
         token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
 
-        Label testLabel = Instancio.of(modelGenerator.getLabelModel()).create();
-        labelRepository.save(testLabel);
-
-        TaskStatus testStatus = taskStatusRepository.findBySlug("draft").orElseThrow();
+        testStatus = Instancio.of(modelGenerator.getTaskStatusModel()).create();
+        taskStatusRepository.save(testStatus);
 
         testTask = Instancio.of(modelGenerator.getTaskModel()).create();
         testTask.setAssignee(testUser);
         testTask.setTaskStatus(testStatus);
-        Set<Label> labels = new HashSet<>();
-        labels.add(testLabel);
-        testTask.setLabels(labels);
+        taskRepository.save(testTask);
+
+        testLabel = Instancio.of(modelGenerator.getLabelModel()).create();
+        labelRepository.save(testLabel);
+
+        testLabel.addTask(testTask);
+        labelRepository.save(testLabel);
     }
 
     @AfterEach
@@ -95,13 +98,12 @@ public class TaskControllerTest {
         taskRepository.deleteAll();
         userRepository.deleteAll();
         labelRepository.deleteAll();
+        taskStatusRepository.deleteAll();
     }
 
 
     @Test
     public void testShow() throws Exception {
-        taskRepository.save(testTask);
-
         var request = get("/api/tasks/{id}", testTask.getId()).with(token);
 
         var result = mockMvc.perform(request)
@@ -118,8 +120,6 @@ public class TaskControllerTest {
 
     @Test
     public void testIndex() throws Exception {
-        taskRepository.save(testTask);
-
         var result = mockMvc.perform(get("/api/tasks").with(token))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -131,13 +131,14 @@ public class TaskControllerTest {
 
     @Test
     public void testCreate() throws Exception {
-
         var dto = new TaskCreateDTO();
-        dto.setTitle(testTask.getName());
-        dto.setContent(testTask.getDescription());
-        dto.setIndex(testTask.getIndex());
-        dto.setAssigneeId(testTask.getAssignee().getId());
-        dto.setStatus(testTask.getTaskStatus().getSlug());
+
+        Task task = Instancio.of(modelGenerator.getTaskModel()).create();
+        dto.setTitle(task.getName());
+        dto.setContent(task.getDescription());
+        dto.setIndex(task.getIndex());
+        dto.setAssigneeId(testUser.getId());
+        dto.setStatus(testStatus.getSlug());
 
         mockMvc.perform(post("/api/tasks")
                         .with(token)
@@ -146,14 +147,13 @@ public class TaskControllerTest {
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
-        //var task = taskRepository.findByName(dto.getTitle()).orElseThrow();
-        var task = taskRepository.findByNameWithLazyFields(dto.getTitle()).orElseThrow();
+        var savedTask = taskRepository.findByNameWithEagerUpload(dto.getTitle()).orElseThrow();
 
-        assertThat(task.getName()).isEqualTo(dto.getTitle());
-        assertThat(task.getDescription()).isEqualTo(dto.getContent());
-        assertThat(task.getIndex()).isEqualTo(dto.getIndex());
-        assertThat(task.getAssignee().getId()).isEqualTo(dto.getAssigneeId());
-        assertThat(task.getTaskStatus().getSlug()).isEqualTo(dto.getStatus());
+        assertThat(savedTask.getName()).isEqualTo(dto.getTitle());
+        assertThat(savedTask.getDescription()).isEqualTo(dto.getContent());
+        assertThat(savedTask.getIndex()).isEqualTo(dto.getIndex());
+        assertThat(savedTask.getAssignee().getId()).isEqualTo(dto.getAssigneeId());
+        assertThat(savedTask.getTaskStatus().getSlug()).isEqualTo(dto.getStatus());
     }
 
 
@@ -173,10 +173,12 @@ public class TaskControllerTest {
 
     @Test
     public void testUpdate() throws Exception {
-        taskRepository.save(testTask);
+        TaskStatus newStatus = Instancio.of(modelGenerator.getTaskStatusModel()).create();
+        taskStatusRepository.save(newStatus);
 
         var dto = taskMapper.map(testTask);
-        dto.setStatus("to_review");
+
+        dto.setStatus(newStatus.getSlug());
         dto.setContent("New Content");
         dto.setTitle("New Title");
 
@@ -188,8 +190,7 @@ public class TaskControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isOk());
 
-        //var task = taskRepository.findByName(dto.getTitle()).orElseThrow();
-        var task = taskRepository.findByNameWithLazyFields(dto.getTitle()).orElseThrow();
+        var task = taskRepository.findByNameWithEagerUpload(dto.getTitle()).orElseThrow();
 
         assertThat(task.getName()).isEqualTo(dto.getTitle());
         assertThat(task.getTaskStatus().getSlug()).isEqualTo(dto.getStatus());
@@ -200,8 +201,6 @@ public class TaskControllerTest {
 
     @Test
     public void testDelete() throws Exception {
-        taskRepository.save(testTask);
-
         var request = delete("/api/tasks/{id}", testTask.getId()).with(token);
 
         mockMvc.perform(request)

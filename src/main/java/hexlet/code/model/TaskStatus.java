@@ -51,13 +51,11 @@ public class TaskStatus implements BaseEntity {
 
 
     public void addTask(Task task) {
-        //tasks.add(task);
         this.getTasks().add(task);
         task.setTaskStatus(this);
     }
 
     public void removeTask(Task task) {
-        //tasks.remove(task);
         this.getTasks().remove(task);
         task.setTaskStatus(null);
     }

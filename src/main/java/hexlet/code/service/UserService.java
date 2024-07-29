@@ -35,14 +35,14 @@ public class UserService {
     }
 
     public UserDTO findById(Long id) {
-        var user = userRepository.findByIdWithTasks(id)
+        var user = userRepository.findByIdWithEagerUpload(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User With Id: " + id + " Not Found"));
 
         return userMapper.map(user);
     }
 
     public UserDTO update(UserUpdateDTO userUpdateDTO, Long id) {
-        var user = userRepository.findByIdWithTasks(id)
+        var user = userRepository.findByIdWithEagerUpload(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User With Id: " + id + " Not Found"));
 
         userMapper.update(userUpdateDTO, user);

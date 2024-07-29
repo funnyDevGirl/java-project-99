@@ -37,7 +37,7 @@ public class LabelService {
     }
 
     public LabelDTO findById(Long id) {
-        var label = labelRepository.findByIdWithTasks(id)
+        var label = labelRepository.findByIdWithEagerUpload(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Label With Id: " + id + " Not Found"));
 
         log.info("Label found in DB {}", id);
@@ -46,7 +46,7 @@ public class LabelService {
     }
 
     public LabelDTO update(LabelUpdateDTO labelUpdateDTO, Long id) {
-        var label = labelRepository.findByIdWithTasks(id)
+        var label = labelRepository.findByIdWithEagerUpload(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Label With Id: " + id + " Not Found"));
 
         labelMapper.update(labelUpdateDTO, label);

@@ -49,13 +49,13 @@ public class TaskService {
     }
 
     public TaskDTO findById(Long id) {
-        var task = taskRepository.findByIdWithLazyFields(id)
+        var task = taskRepository.findByIdWithEagerUpload(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task With Id: " + id + " Not Found"));
         return taskMapper.map(task);
     }
 
     public TaskDTO update(TaskUpdateDTO taskUpdateDTO, Long id) {
-        var task = taskRepository.findByIdWithLazyFields(id)
+        var task = taskRepository.findByIdWithEagerUpload(id)
                     .orElseThrow(() -> new ResourceNotFoundException("Task With Id: " + id + " Not Found"));
 
         taskMapper.update(taskUpdateDTO, task);

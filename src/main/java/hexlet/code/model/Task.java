@@ -1,6 +1,5 @@
 package hexlet.code.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
@@ -29,7 +28,6 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"name", "taskStatus"})
-//@CacheConfig(cacheNames = "tasks")
 public class Task implements BaseEntity {
 
     @Id
@@ -56,37 +54,4 @@ public class Task implements BaseEntity {
 
     @ManyToMany
     private Set<Label> labels = new HashSet<>();
-
-
-    public void addLabel(Label label) {
-        //labels.add(label);
-        this.getLabels().add(label);
-        label.getTasks().add(this);
-    }
-
-    public void removeLabel(Label label) {
-        //labels.remove(label);
-        this.getLabels().remove(label);
-        label.getTasks().remove(this);
-    }
-
-    public void addUser(User user) {
-        this.setAssignee(user);
-        user.getTasks().add(this);
-    }
-
-    public void removeUser(User user) {
-        this.setAssignee(null);
-        user.getTasks().remove(this);
-    }
-
-    public void addStatus(TaskStatus status) {
-        this.setTaskStatus(status);
-        status.getTasks().add(this);
-    }
-
-    public void removeStatus(TaskStatus status) {
-        this.setTaskStatus(null);
-        status.getTasks().remove(this);
-    }
 }

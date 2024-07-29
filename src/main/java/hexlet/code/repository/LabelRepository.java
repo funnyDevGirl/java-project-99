@@ -13,17 +13,16 @@ import java.util.Set;
 public interface LabelRepository extends JpaRepository<Label, Long> {
 
     @Query("SELECT l FROM Label l LEFT JOIN FETCH l.tasks WHERE l.name = :name")
-    Optional<Label> findByNameWithTasks(@Param("name") String name);
+    Optional<Label> findByNameWithEagerUpload(@Param("name") String name);
 
     @Query("SELECT l FROM Label l WHERE l.id IN :labelsIds")
     Set<Label> findByIdIn(@Param("labelsIds") Set<Long> labelsIds);
 
     @Query("SELECT l FROM Label l LEFT JOIN FETCH l.tasks WHERE l.id = :id")
-    Optional<Label> findByIdWithTasks(@Param("id") Long id);
+    Optional<Label> findByIdWithEagerUpload(@Param("id") Long id);
 
 
     //@EntityGraph(attributePaths = {"tasks"})
     Optional<Label> findByName(String name);
 
-    //Set<Label> findByIdIn(Set<Long> labelsIds);
 }

@@ -82,8 +82,10 @@ public class LabelControllerTest {
 
     @AfterEach
     public void clean() {
-        //userRepository.delete(testUser);
-        //labelRepository.delete(testLabel);
+        taskRepository.deleteAll();
+        userRepository.deleteAll();
+        labelRepository.deleteAll();
+        taskStatusRepository.deleteAll();
     }
 
 
@@ -125,8 +127,7 @@ public class LabelControllerTest {
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
-        //var label = labelRepository.findByName(dto.getName()).orElseThrow();
-        var label = labelRepository.findByNameWithTasks(dto.getName()).orElseThrow();
+        var label = labelRepository.findByNameWithEagerUpload(dto.getName()).orElseThrow();
 
         assertThat(label.getName()).isEqualTo(dto.getName());
         assertThat(label.getName()).isNotNull();
@@ -148,7 +149,6 @@ public class LabelControllerTest {
 
     @Test
     public void testUpdate() throws Exception {
-
         var dto = labelMapper.map(testLabel);
         dto.setName("Java");
 
@@ -160,8 +160,7 @@ public class LabelControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isOk());
 
-        //var label = labelRepository.findByName(dto.getName()).orElseThrow();
-        var label = labelRepository.findByNameWithTasks(dto.getName()).orElseThrow();
+        var label = labelRepository.findByNameWithEagerUpload(dto.getName()).orElseThrow();
 
         assertThat(label.getName()).isEqualTo("Java");
         assertThat(label.getTasks().size()).isEqualTo(testLabel.getTasks().size());
@@ -201,23 +200,12 @@ public class LabelControllerTest {
 
         labelRepository.save(label);
 
-        Label saved = labelRepository.findByNameWithTasks("Metropolitan").orElseThrow();
+        Label saved = labelRepository.findByNameWithEagerUpload("Metropolitan").orElseThrow();
         assertThat(saved.getTasks()).isEmpty();
     }
-    /*
-        Label:
-         Name: Metropolitan
-         tasks: "Metro"
 
-        Task:
-         name: Metro
-         descr: Destroy metro station
-         label: null
-         */
-
-    // TODO:  исправить тест
     @Test
-    public void bidirectional() {
+    public void bidirectionalIncorrectSync() {
         //PERSIST
         Task task = new Task();
         task.setName("Metro");
@@ -242,7 +230,36 @@ public class LabelControllerTest {
 
         labelRepository.save(label);
 
-        Label saved = labelRepository.findByNameWithTasks("Metropolitan").orElseThrow();
+        Label saved = labelRepository.findByNameWithEagerUpload("Metropolitan").orElseThrow();
         assertThat(saved.getTasks()).isNotEmpty();
+    }
+
+    @Test
+    public void bidirectionalCorrectSync() {
+        //PERSIST
+        Task task = new Task();
+        task.setName("Metro");
+        task.setDescription("Build metro station");
+        taskRepository.save(task);
+
+        Label label = new Label();
+        label.setName("label");
+
+        System.out.println("save label");
+        labelRepository.save(label);
+
+        //MERGE
+        label.setName("Metropolitan");
+        task.setDescription("Destroy metro station");
+
+        label.addTask(task);
+
+        System.out.println("update label");
+        labelRepository.save(label);
+
+        Label saved = labelRepository.findByNameWithEagerUpload("Metropolitan").orElseThrow();
+        Task savedTask = taskRepository.findByIdWithEagerUpload(task.getId()).orElseThrow();
+        assertThat(saved.getTasks()).isNotEmpty();
+        assertThat(savedTask.getLabels()).isNotEmpty();
     }
 }
