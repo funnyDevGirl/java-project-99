@@ -17,10 +17,12 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
     @Query("SELECT t FROM Task t WHERE t.id IN :taskIds")
     Set<Task> findByIdIn(@Param("taskIds") Set<Long> taskIds);
 
-    @Query("SELECT t FROM Task t LEFT JOIN FETCH t.labels LEFT JOIN FETCH t.assignee LEFT JOIN FETCH t.taskStatus WHERE t.name = :name")
+    @Query("SELECT t FROM Task t LEFT JOIN FETCH t.labels LEFT JOIN FETCH " +
+            "t.assignee LEFT JOIN FETCH t.taskStatus WHERE t.name = :name")
     Optional<Task> findByNameWithEagerUpload(@Param("name") String name);
 
-    @Query("SELECT t FROM Task t LEFT JOIN FETCH t.labels LEFT JOIN FETCH t.assignee LEFT JOIN FETCH t.taskStatus WHERE t.id = :id")
+    @Query("SELECT t FROM Task t LEFT JOIN FETCH t.labels LEFT JOIN FETCH " +
+            "t.assignee LEFT JOIN FETCH t.taskStatus WHERE t.id = :id")
     Optional<Task> findByIdWithEagerUpload(@Param("id") Long id);
 
 
