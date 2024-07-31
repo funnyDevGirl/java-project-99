@@ -5,8 +5,7 @@ spring:
     generate-ddl: true
     show-sql: true
     hibernate:
-      ddl-auto: create
-
+      ddl-auto: create-drop
   output:
     ansi:
       enabled: always
@@ -19,7 +18,6 @@ spring:
       mode: always
   profiles:
     default: development
-    #default: localDB
 
 logging:
   level:

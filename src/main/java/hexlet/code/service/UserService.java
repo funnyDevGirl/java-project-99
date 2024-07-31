@@ -20,6 +20,7 @@ public class UserService {
 
 
     public UserDTO create(UserCreateDTO userCreateDTO) {
+
         var user = userMapper.map(userCreateDTO);
         userRepository.save(user);
 
@@ -27,6 +28,7 @@ public class UserService {
     }
 
     public List<UserDTO> getAll() {
+
         var users = userRepository.findAll();
 
         return users.stream()
@@ -35,14 +37,16 @@ public class UserService {
     }
 
     public UserDTO findById(Long id) {
-        var user = userRepository.findByIdWithEagerUpload(id)
+
+        var user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User With Id: " + id + " Not Found"));
 
         return userMapper.map(user);
     }
 
     public UserDTO update(UserUpdateDTO userUpdateDTO, Long id) {
-        var user = userRepository.findByIdWithEagerUpload(id)
+
+        var user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User With Id: " + id + " Not Found"));
 
         userMapper.update(userUpdateDTO, user);
@@ -52,6 +56,7 @@ public class UserService {
     }
 
     public void delete(Long id) throws Exception {
+
         userRepository.deleteById(id);
     }
 }

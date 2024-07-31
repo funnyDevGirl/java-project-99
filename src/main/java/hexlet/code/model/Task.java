@@ -1,5 +1,6 @@
 package hexlet.code.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
@@ -8,6 +9,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
@@ -15,7 +17,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -46,12 +47,30 @@ public class Task implements BaseEntity {
     @CreatedDate
     private LocalDate createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
     private TaskStatus taskStatus;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assignee_id")
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)//у меня
     private User assignee;
 
-    @ManyToMany
+
+//    @ManyToMany
+//    @JoinTable(name="label_task",
+//            joinColumns = @JoinColumn(name="task_id", referencedColumnName="id"),
+//            inverseJoinColumns = @JoinColumn(name="label_id", referencedColumnName="id") )
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     private Set<Label> labels = new HashSet<>();
+
+
+//    public void addLabel(Label label) {
+//        labels.add(label);
+//        label.getTasks().add(this);
+//    }
+//
+//    public void removeLabel(Label label) {
+//        labels.remove(label);
+//        label.getTasks().remove(this);
+//    }
 }
