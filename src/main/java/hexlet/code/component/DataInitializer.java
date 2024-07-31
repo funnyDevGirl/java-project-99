@@ -22,6 +22,7 @@ public class DataInitializer implements ApplicationRunner {
     private final TaskStatusService taskStatusService;
     private final LabelService labelService;
 
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
         var admin = new UserCreateDTO();
