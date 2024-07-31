@@ -21,4 +21,5 @@ public class AppApplication {
     public Faker getFaker() {
         return new Faker(Locale.US);
     }
+
 }
