@@ -22,7 +22,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
