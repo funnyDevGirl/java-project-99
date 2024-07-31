@@ -7,6 +7,8 @@ import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.model.Label;
 import hexlet.code.model.Task;
 import hexlet.code.model.TaskStatus;
+import hexlet.code.model.User;
+import hexlet.code.repository.UserRepository;
 import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import org.mapstruct.Mapper;
@@ -22,7 +24,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
 @Mapper(
         uses = {JsonNullableMapper.class, ReferenceMapper.class},
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
@@ -37,10 +38,13 @@ public abstract class TaskMapper {
     @Autowired
     private LabelRepository labelRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Mapping(source = "title", target = "name")
     @Mapping(source = "content", target = "description")
     @Mapping(source = "status", target = "taskStatus", qualifiedByName = "slugToTaskStatus")
-    @Mapping(source = "assigneeId", target = "assignee")
+    @Mapping(source = "assigneeId", target = "assignee", qualifiedByName = "idToAssignee")
     @Mapping(source = "taskLabelIds", target = "labels", qualifiedByName = "labelIdsToLabels")
     public abstract Task map(TaskCreateDTO taskCreateDTO);
 
@@ -55,15 +59,21 @@ public abstract class TaskMapper {
 
     @Mapping(source = "title", target = "name")
     @Mapping(source = "content", target = "description")
-    @Mapping(source = "assigneeId", target = "assignee")
+    @Mapping(source = "assigneeId", target = "assignee", qualifiedByName = "idToAssignee")
     @Mapping(source = "status", target = "taskStatus", qualifiedByName = "slugToTaskStatus")
     @Mapping(source = "taskLabelIds", target = "labels", qualifiedByName = "labelIdsToLabels")
     public abstract void update(TaskUpdateDTO taskUpdateDTO, @MappingTarget Task task);
 
 
+    @Named("idToAssignee")
+    public User idToAssignee(Long assigneeId) {
+        return userRepository.findById(assigneeId).orElseThrow(
+                () -> new ResourceNotFoundException("User with id " + assigneeId + " not found"));
+    }
+
     @Named("slugToTaskStatus")
     public TaskStatus slugToTaskStatus(String slug) {
-        return taskStatusRepository.findBySlug(slug).orElseThrow(
+        return taskStatusRepository.findBySlugWithEagerUpload(slug).orElseThrow(
                 () -> new ResourceNotFoundException("TaskStatus with slug " + slug + " not found"));
     }
 
