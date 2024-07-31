@@ -11,20 +11,15 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.mapper.UserMapper;
 import hexlet.code.model.User;
-import hexlet.code.repository.LabelRepository;
-import hexlet.code.repository.TaskRepository;
-import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.util.ModelGenerator;
 import org.instancio.Instancio;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import java.util.HashMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,15 +36,6 @@ public class UsersControllerTest {
     private UserRepository userRepository;
 
     @Autowired
-    private TaskRepository taskRepository;
-
-    @Autowired
-    private LabelRepository labelRepository;
-
-    @Autowired
-    private TaskStatusRepository taskStatusRepository;
-
-    @Autowired
     private ObjectMapper om;
 
     @Autowired
@@ -60,23 +46,12 @@ public class UsersControllerTest {
 
     private User testUser;
 
-    private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor token;
-
 
     @BeforeEach
     public void setUp() {
         testUser = Instancio.of(modelGenerator.getUserModel()).create();
-        userRepository.save(testUser);
-        token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
     }
 
-    @AfterEach
-    public void clean() {
-        taskRepository.deleteAll();
-        userRepository.deleteAll();
-        labelRepository.deleteAll();
-        taskStatusRepository.deleteAll();
-    }
 
     @Test
     public void testWelcomePage() throws Exception {
@@ -90,6 +65,8 @@ public class UsersControllerTest {
 
     @Test
     public void testShow() throws Exception {
+        userRepository.save(testUser);
+
         var request = get("/api/users/{id}", testUser.getId()).with(jwt());
 
         var result = mockMvc.perform(request)
@@ -107,6 +84,8 @@ public class UsersControllerTest {
 
     @Test
     public void testIndex() throws Exception {
+        userRepository.save(testUser);
+
         var result = mockMvc.perform(get("/api/users").with(jwt()))
 
                 .andExpect(status().isOk())
@@ -127,7 +106,7 @@ public class UsersControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isCreated());
 
-        var user = userRepository.findByEmailWithEagerUpload(newUser.getEmail()).orElseThrow();
+        var user = userRepository.findByEmail(newUser.getEmail()).orElseThrow();
 
         assertThat(user).isNotNull();
         assertThat(user.getFirstName()).isEqualTo(newUser.getFirstName());
@@ -151,6 +130,10 @@ public class UsersControllerTest {
 
     @Test
     public void testUpdate() throws Exception {
+        userRepository.save(testUser);
+
+        var token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
+
         var dto = userMapper.map(testUser);
 
         dto.setFirstName("New Name");
@@ -164,7 +147,7 @@ public class UsersControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isOk());
 
-        var user = userRepository.findByIdWithEagerUpload(testUser.getId()).orElseThrow();
+        var user = userRepository.findById(testUser.getId()).orElseThrow();
 
         assertThat(user.getFirstName()).isEqualTo(dto.getFirstName());
         assertThat(user.getLastName()).isEqualTo(dto.getLastName());
@@ -172,6 +155,10 @@ public class UsersControllerTest {
 
     @Test
     public void testPartialUpdate() throws Exception {
+        userRepository.save(testUser);
+
+        var token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
+
         var dto = new HashMap<String, String>();
         dto.put("firstName", "Another First Name");
 
@@ -183,7 +170,7 @@ public class UsersControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isOk());
 
-        var author = userRepository.findByIdWithEagerUpload(testUser.getId()).orElseThrow();
+        var author = userRepository.findById(testUser.getId()).orElseThrow();
 
         assertThat(author.getLastName()).isEqualTo(testUser.getLastName());
         assertThat(author.getFirstName()).isEqualTo(dto.get("firstName"));
@@ -191,6 +178,10 @@ public class UsersControllerTest {
 
     @Test
     public void testDelete() throws Exception {
+        userRepository.save(testUser);
+
+        var token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
+
         var request = delete("/api/users/{id}", testUser.getId()).with(token);
 
         mockMvc.perform(request)
