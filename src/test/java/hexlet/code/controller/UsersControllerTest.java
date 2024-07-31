@@ -151,7 +151,7 @@ public class UsersControllerTest {
 
     @Test
     public void testUpdate() throws Exception {
-        var dto = userMapper.map(testUser);
+        var dto = userMapper.map(testUser); //UserDTO
 
         dto.setFirstName("New Name");
         dto.setLastName("New Last Name");
