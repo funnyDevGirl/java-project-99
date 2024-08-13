@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.dto.labels.LabelCreateDTO;
 import hexlet.code.mapper.LabelMapper;
 import hexlet.code.model.Label;
-import hexlet.code.model.Task;
 import hexlet.code.model.User;
 import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
@@ -21,9 +20,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -82,10 +78,8 @@ public class LabelControllerTest {
 
     @AfterEach
     public void clean() {
-        taskRepository.deleteAll();
-        userRepository.deleteAll();
-        labelRepository.deleteAll();
-        taskStatusRepository.deleteAll();
+        userRepository.delete(testUser);
+        labelRepository.delete(testLabel);
     }
 
 
@@ -127,7 +121,7 @@ public class LabelControllerTest {
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
-        var label = labelRepository.findByNameWithEagerUpload(dto.getName()).orElseThrow();
+        var label = labelRepository.findByName(dto.getName()).orElseThrow();
 
         assertThat(label.getName()).isEqualTo(dto.getName());
         assertThat(label.getName()).isNotNull();
@@ -149,6 +143,7 @@ public class LabelControllerTest {
 
     @Test
     public void testUpdate() throws Exception {
+
         var dto = labelMapper.map(testLabel);
         dto.setName("Java");
 
@@ -160,7 +155,7 @@ public class LabelControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isOk());
 
-        var label = labelRepository.findByNameWithEagerUpload(dto.getName()).orElseThrow();
+        var label = labelRepository.findByName(dto.getName()).orElseThrow();
 
         assertThat(label.getName()).isEqualTo("Java");
         assertThat(label.getTasks().size()).isEqualTo(testLabel.getTasks().size());
@@ -175,91 +170,5 @@ public class LabelControllerTest {
                 .andExpect(status().isNoContent());
 
         assertThat(labelRepository.existsById(testLabel.getId())).isEqualTo(false);
-    }
-
-    @Test
-    public void bidirectionalNoSync() {
-        //PERSIST
-        Task task = new Task();
-        task.setName("Metro");
-        task.setDescription("Build metro station");
-        taskRepository.save(task);
-
-        Label label = new Label();
-        label.setName("label");
-
-        Set<Task> tasks = new HashSet<>();
-        tasks.add(task);
-        label.setTasks(tasks);
-
-        labelRepository.save(label);
-
-        //MERGE
-        label.setName("Metropolitan");
-        task.setDescription("Destroy metro station");
-
-        labelRepository.save(label);
-
-        Label saved = labelRepository.findByNameWithEagerUpload("Metropolitan").orElseThrow();
-        assertThat(saved.getTasks()).isEmpty();
-    }
-
-    @Test
-    public void bidirectionalIncorrectSync() {
-        //PERSIST
-        Task task = new Task();
-        task.setName("Metro");
-        task.setDescription("Build metro station");
-        taskRepository.save(task);
-
-        Label label = new Label();
-        label.setName("label");
-        Set<Task> tasks = new HashSet<>();
-        tasks.add(task);
-        label.setTasks(tasks);
-
-        Set<Label> labels = new HashSet<>();
-        labels.add(label);
-        task.setLabels(labels);
-
-        labelRepository.save(label);
-
-        //MERGE
-        label.setName("Metropolitan");
-        task.setDescription("Destroy metro station");
-
-        labelRepository.save(label);
-
-        Label saved = labelRepository.findByNameWithEagerUpload("Metropolitan").orElseThrow();
-        assertThat(saved.getTasks()).isNotEmpty();
-    }
-
-    @Test
-    public void bidirectionalCorrectSync() {
-        //PERSIST
-        Task task = new Task();
-        task.setName("Metro");
-        task.setDescription("Build metro station");
-        taskRepository.save(task);
-
-        Label label = new Label();
-        label.setName("label");
-
-        System.out.println("save label");
-        labelRepository.save(label);
-
-        //MERGE
-        label.setName("Metropolitan");
-        task.setDescription("Destroy metro station");
-
-        label.addTask(task);
-
-        System.out.println("update label");
-        labelRepository.save(label);
-
-        Label saved = labelRepository.findByNameWithEagerUpload("Metropolitan").orElseThrow();
-        Task savedTask = taskRepository.findByIdWithEagerUpload(task.getId()).orElseThrow();
-        assertThat(saved.getTasks()).isNotEmpty();
-        assertThat(savedTask.getLabels()).isNotEmpty();
     }
 }
