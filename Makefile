@@ -13,4 +13,7 @@ report:
 dev:
 	./gradlew run
 
+local:
+	./gradlew bootRun --args='--spring.profiles.active=file'
+
 .PHONY: build

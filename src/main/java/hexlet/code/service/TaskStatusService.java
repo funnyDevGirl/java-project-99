@@ -20,7 +20,6 @@ public class TaskStatusService {
 
 
     public TaskStatusDTO create(TaskStatusCreateDTO taskStatusCreateDTO) {
-
         var taskStatus = taskStatusMapper.map(taskStatusCreateDTO);
         taskStatusRepository.save(taskStatus);
 
@@ -28,7 +27,6 @@ public class TaskStatusService {
     }
 
     public List<TaskStatusDTO> getAll() {
-
         var taskStatuses = taskStatusRepository.findAll();
 
         return taskStatuses.stream()
@@ -37,16 +35,14 @@ public class TaskStatusService {
     }
 
     public TaskStatusDTO findById(Long id) {
-
-        var taskStatus = taskStatusRepository.findById(id)
+        var taskStatus = taskStatusRepository.findByIdWithEagerUpload(id)
                 .orElseThrow(() -> new ResourceNotFoundException("TaskStatus With Id: " + id + " Not Found"));
 
         return taskStatusMapper.map(taskStatus);
     }
 
     public TaskStatusDTO update(TaskStatusUpdateDTO taskStatusUpdateDTO, Long id) {
-
-        var taskStatus = taskStatusRepository.findById(id)
+        var taskStatus = taskStatusRepository.findByIdWithEagerUpload(id)
                 .orElseThrow(() -> new ResourceNotFoundException("TaskStatus With Id: " + id + " Not Found"));
 
         taskStatusMapper.update(taskStatusUpdateDTO, taskStatus);
@@ -56,7 +52,6 @@ public class TaskStatusService {
     }
 
     public void delete(Long id) throws Exception {
-
         taskStatusRepository.deleteById(id);
     }
 }
