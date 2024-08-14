@@ -1,5 +1,6 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.gradle.api.tasks.JavaExec
 
 plugins {
 	id("com.github.ben-manes.versions") version "0.48.0"
@@ -107,4 +108,20 @@ tasks.jacocoTestReport {
 	reports {
 		xml.required.set(true)
 	}
+}
+
+tasks.register<JavaExec>("runTaskManagerApp") {
+	classpath = sourceSets.main.get().runtimeClasspath
+	mainClass.set("hexlet.code.AppApplication")
+	args("--server.port=8080")
+}
+
+tasks.register<JavaExec>("runAnonymizerApp") {
+	classpath = sourceSets.main.get().runtimeClasspath
+	mainClass.set("io.project.Application")
+	args("--server.port=8081")
+}
+
+tasks.register("runAllApps") {
+	dependsOn("runTaskManagerApp", "runAnonymizerApp")
 }

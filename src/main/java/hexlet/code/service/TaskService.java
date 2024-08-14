@@ -56,7 +56,7 @@ public class TaskService {
 
     public TaskDTO update(TaskUpdateDTO taskUpdateDTO, Long id) {
         var task = taskRepository.findByIdWithEagerUpload(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Task With Id: " + id + " Not Found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Task With Id: " + id + " Not Found"));
 
         taskMapper.update(taskUpdateDTO, task);
 
