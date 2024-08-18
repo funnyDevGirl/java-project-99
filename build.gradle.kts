@@ -81,16 +81,7 @@ dependencies {
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.2.0")
 	testImplementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.2.0")
 
-	//org.springframework.boot:spring-boot-starter-cache:3.1.5
-	implementation("org.springframework.boot:spring-boot-starter-cache")
-	implementation("net.sf.ehcache:ehcache:2.10.6")
-	implementation("org.ehcache:ehcache:3.10.8")
-	implementation("org.ehcache:ehcache-transactions:3.10.0")
-	implementation("javax.cache:cache-api:1.1.1")
-	implementation("org.springframework:spring-context-support:5.3.25")
-	//implementation("net.sf.ehcache:ehcache-management:2.6.10")
-	implementation("net.sf.ehcache:ehcache-core:2.6.10")
-
+	testImplementation("org.skyscreamer:jsonassert:1.5.3")
 }
 
 tasks.withType<Test>() {
