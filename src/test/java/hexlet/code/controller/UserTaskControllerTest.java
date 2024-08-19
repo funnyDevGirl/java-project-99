@@ -155,8 +155,7 @@ public class UserTaskControllerTest {
         Task task = taskMapper.map(testTask);
         taskRepository.save(task); // task.id = 1;
 
-        // merge
-        user.addTask(task);
+        user.addTask(task); // merge
         userRepository.save(user);
 
         // Если используется UserWithTaskDTO:

@@ -4,6 +4,8 @@ import hexlet.code.dto.tasks.TaskCreateDTO;
 import hexlet.code.dto.tasks.TaskDTO;
 import hexlet.code.dto.users.UserCreateDTO;
 import hexlet.code.dto.users.UserDTO;
+import hexlet.code.service.TaskService;
+import hexlet.code.service.UserService;
 import hexlet.code.service.UserTaskService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -26,18 +28,21 @@ import hexlet.code.dto.userstasks.UserWithTaskDTO;
 @AllArgsConstructor
 public class UserTaskController {
     private final UserTaskService userTaskService;
+    private final UserService userService;
+    private final TaskService taskService;
+
 
 
     @PostMapping(path = "/create/user")
     @ResponseStatus(HttpStatus.CREATED)
     public UserDTO create(@Valid @RequestBody UserCreateDTO userCreateDTO) {
-        return userTaskService.createUser(userCreateDTO);
+        return userService.create(userCreateDTO);
     }
 
     @PostMapping(path = "/create/task")
     @ResponseStatus(HttpStatus.CREATED)
     public TaskDTO create(@Valid @RequestBody TaskCreateDTO taskCreateDTO) {
-        return userTaskService.createTask(taskCreateDTO);
+        return taskService.create(taskCreateDTO);
     }
 
     @PutMapping("/user/{userId}/task/{taskId}")
