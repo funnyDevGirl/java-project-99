@@ -62,9 +62,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/api/create/user").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/create/user").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/create/task").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/create/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/user/**").permitAll()
 
                         .requestMatchers(PUBLIC_URLS).permitAll()
