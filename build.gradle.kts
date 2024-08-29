@@ -104,13 +104,3 @@ tasks.register<JavaExec>("runTaskManagerApp") {
 	mainClass.set("hexlet.code.AppApplication")
 	args("--server.port=8080")
 }
-
-tasks.register<JavaExec>("runAnonymizerApp") {
-	classpath = sourceSets.main.get().runtimeClasspath
-	mainClass.set("io.project.Application")
-	args("--server.port=8081")
-}
-
-tasks.register("runAllApps") {
-	dependsOn("runTaskManagerApp", "runAnonymizerApp")
-}
