@@ -45,7 +45,9 @@ public class SecurityConfig {
             new AntPathRequestMatcher("/index.html"),
             new AntPathRequestMatcher("/api-docs/**"),
             new AntPathRequestMatcher("/proxy/**"),
-            new AntPathRequestMatcher("/assets/**")
+            new AntPathRequestMatcher("/assets/**"),
+
+            new AntPathRequestMatcher("/myform")
     );
 
     @Bean
@@ -60,9 +62,11 @@ public class SecurityConfig {
 
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-                        .requestMatchers(PUBLIC_URLS).permitAll()
-                        .anyRequest().authenticated())
+                        //.requestMatchers("/myform").permitAll()
+                        .requestMatchers("/api/**").permitAll()
+                        //.requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+                        .requestMatchers(PUBLIC_URLS).permitAll())
+                        //.anyRequest().authenticated())
 
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer((rs) -> rs.jwt((jwt) -> jwt.decoder(jwtDecoder)))
