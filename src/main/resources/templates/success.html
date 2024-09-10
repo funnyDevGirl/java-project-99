@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Registration Successful</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #5cb85c;
+            text-decoration: none;
+            font-size: 1.5rem;
+        }
+        a:hover {
+            color: #4cae4c;
+        }
+    </style>
+</head>
+<body>
+<h1 th:text="'Вы зарегистрировали пользователя ' + ${fullName} + '!'"></h1>
+<a th:href="@{/myform}">Зарегистрировать нового пользователя</a>
+</body>
+</html>
