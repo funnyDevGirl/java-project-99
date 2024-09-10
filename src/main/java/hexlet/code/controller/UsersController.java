@@ -67,4 +67,10 @@ public class UsersController {
     public void delete(@PathVariable Long id) throws Exception {
         userService.delete(id);
     }
+
+    @GetMapping("/html")
+    @ResponseStatus(HttpStatus.OK)
+    public String getUsersHtml() {
+        return userService.generateUsersTable();
+    }
 }

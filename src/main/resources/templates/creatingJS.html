@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация пользователя</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            margin-top: 70px;
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            width: 300px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        #userSection {
+            margin-top: 30px;
+            display: none;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            max-width: 600px;
+            margin: 0 auto;
+            margin-bottom: 50px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 4px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+<h1>Регистрация нового пользователя</h1>
+<form id="registrationForm">
+    <label for="firstName">Имя:</label>
+    <input type="text" id="firstName" name="firstName" required>
+    <label for="lastName">Фамилия:</label>
+    <input type="text" id="lastName" name="lastName" required>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+    <label for="password">Пароль:</label>
+    <input type="password" id="password" name="password" required>
+    <button type="submit">Зарегистрироваться</button>
+</form>
+
+<div id="userSection" style="display: none;">
+    <h2>Список пользователей:</h2>
+    <ul id="userList"></ul>
+
+    <h2>Таблица пользователей:</h2>
+    <div id="user-table"></div>
+</div>
+
+<script>
+    document.getElementById('registrationForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const userData = {
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value
+        };
+
+        fetch('/api/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        })
+        .then(response => {
+            if (response.ok) {
+                document.getElementById('registrationForm').reset();
+                loadUsersList();       // Загружаем список пользователей
+                loadUserTable();       // Затем загружаем таблицу пользователей
+                document.getElementById('userSection').style.display = 'block';
+            } else {
+                throw new Error('Ошибка при регистрации: ' + response.statusText);
+            }
+        })
+        .catch(error => console.error('Ошибка fetch:', error));
+    });
+
+    function loadUsersList() {
+        fetch('/api/users')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Ошибка при получении списка пользователей');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '';
+            data.forEach(user => {
+                userList.innerHTML += `<li>${user.firstName} ${user.lastName} - ${user.email}</li>`;
+            });
+        })
+        .catch(error => console.error('Ошибка загрузки списка пользователей:', error));
+    }
+
+    async function loadUserTable() {
+        try {
+            const response = await fetch('/api/users/html');
+            if (response.ok) {
+                const html = await response.text();
+                document.getElementById('user-table').innerHTML = html;
+            } else {
+                throw new Error('Ошибка при загрузке таблицы пользователей');
+            }
+        } catch (error) {
+            console.error('Ошибка fetching user table:', error);
+        }
+    }
+
+    // Загрузка списка пользователей при первой загрузке страницы
+    window.onload = loadUsersList;
+</script>
+</body>
+</html>
